@@ -110,7 +110,7 @@ export function ImageUploader({ value, onChange, label = "Imagem" }: ImageUpload
 
       formData.append("file", compressedFile);
 
-      // Upload to local /api/upload
+      // Upload to local or Supabase via /api/upload
       const res = await fetch("/api/upload", {
         method: "POST",
         body: formData,
@@ -134,6 +134,20 @@ export function ImageUploader({ value, onChange, label = "Imagem" }: ImageUpload
     }
   };
 
+  const handleRemove = async () => {
+    if (value) {
+      try {
+        await fetch(`/api/upload?url=${encodeURIComponent(value)}`, {
+          method: "DELETE",
+        });
+      } catch (err) {
+        console.error("Erro ao deletar imagem do servidor:", err);
+      }
+    }
+    onChange("");
+    setStats(null);
+  };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
@@ -152,7 +166,7 @@ export function ImageUploader({ value, onChange, label = "Imagem" }: ImageUpload
           onClick={() => setUseUrlMode(!useUrlMode)}
           className="text-[10px] text-white/50 hover:text-white underline flex items-center gap-1"
         >
-          {useUrlMode ? "Usar Upload Local (Recomendado)" : "Inserir URL externa"}
+          {useUrlMode ? "Usar Upload Local / Supabase" : "Inserir URL externa"}
         </button>
       </div>
 
@@ -182,7 +196,7 @@ export function ImageUploader({ value, onChange, label = "Imagem" }: ImageUpload
                 </button>
                 <button
                   type="button"
-                  onClick={() => onChange("")}
+                  onClick={handleRemove}
                   className="text-xs font-bold uppercase px-3 py-1.5 rounded bg-red-500/80 hover:bg-red-500 text-white"
                 >
                   Remover

@@ -115,7 +115,19 @@ export function MultiImageUploader({ value = [], onChange, label = "Galeria de I
     setUploading(false);
   };
 
-  const handleRemoveImage = (indexToRemove: number) => {
+  const handleRemoveImage = async (indexToRemove: number) => {
+    const urlToRemove = value[indexToRemove];
+
+    if (urlToRemove) {
+      try {
+        await fetch(`/api/upload?url=${encodeURIComponent(urlToRemove)}`, {
+          method: "DELETE",
+        });
+      } catch (err) {
+        console.error("Erro ao excluir imagem do servidor:", err);
+      }
+    }
+
     const updated = value.filter((_, idx) => idx !== indexToRemove);
     onChange(updated);
   };
@@ -144,7 +156,7 @@ export function MultiImageUploader({ value = [], onChange, label = "Galeria de I
                 type="button"
                 onClick={() => handleRemoveImage(idx)}
                 className="p-2 rounded-full bg-red-500/80 hover:bg-red-500 text-white transition-colors"
-                title="Remover imagem"
+                title="Remover imagem do servidor"
               >
                 <Trash2 size={16} />
               </button>

@@ -64,3 +64,45 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Erro ao salvar imagem no servidor" }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const imageUrl = searchParams.get("url");
+
+    if (!imageUrl) {
+      return NextResponse.json({ error: "URL da imagem não fornecida" }, { status: 400 });
+    }
+
+    // Extract filename from URL (e.g. img-1721588000-abcd.webp)
+    const filename = imageUrl.split("/").pop();
+    if (!filename) {
+      return NextResponse.json({ error: "Nome de arquivo inválido" }, { status: 400 });
+    }
+
+    // 1. Delete from Supabase Storage if active
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { error } = await supabase.storage.from("portfolio-images").remove([filename]);
+        if (error) {
+          console.error("Supabase Storage delete error:", error);
+        }
+      } catch (supabaseErr) {
+        console.error("Supabase Storage delete exception:", supabaseErr);
+      }
+    }
+
+    // 2. Delete from local disk if exists
+    try {
+      const localFilePath = path.join(UPLOADS_DIR, filename);
+      await fs.unlink(localFilePath);
+    } catch {
+      // Ignore if local file doesn't exist
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    return NextResponse.json({ error: "Erro ao excluir imagem" }, { status: 500 });
+  }
+}
