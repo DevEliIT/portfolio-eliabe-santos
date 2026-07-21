@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ImageUploader } from "@/app/components/ImageUploader";
 import { ArrowLeft, Save } from "lucide-react";
 
 interface EditPostProps {
@@ -107,7 +108,7 @@ export default function EditPostPage({ params }: EditPostProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#161927] text-white flex items-center justify-center text-xs">
+      <div className="min-h-screen bg-[#161927] text-[#ffffff] flex items-center justify-center text-xs">
         Carregando artigo...
       </div>
     );
@@ -219,18 +220,11 @@ export default function EditPostPage({ params }: EditPostProps) {
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase text-white/70 mb-2">
-                URL da Imagem de Capa *
-              </label>
-              <input
-                type="url"
-                required
-                value={formData.coverImg}
-                onChange={(e) => setFormData({ ...formData, coverImg: e.target.value })}
-                className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"
-              />
-            </div>
+            <ImageUploader
+              label="Imagem de Capa do Artigo"
+              value={formData.coverImg}
+              onChange={(url) => setFormData({ ...formData, coverImg: url })}
+            />
 
             <div>
               <label className="block text-xs font-bold uppercase text-white/70 mb-2">

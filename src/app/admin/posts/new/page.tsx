@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ImageUploader } from "@/app/components/ImageUploader";
 import { ArrowLeft, Save } from "lucide-react";
 
 export default function NewPostPage() {
@@ -16,7 +17,7 @@ export default function NewPostPage() {
     category: "Desenvolvimento Web",
     subtitle: "",
     content: "",
-    coverImg: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
+    coverImg: "",
     author: "Eliabe Santos",
     publishedAt: new Date().toISOString().split("T")[0],
     readTime: "5 min de leitura",
@@ -176,19 +177,11 @@ export default function NewPostPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase text-white/70 mb-2">
-                URL da Imagem de Capa *
-              </label>
-              <input
-                type="url"
-                required
-                placeholder="https://images.unsplash.com/..."
-                value={formData.coverImg}
-                onChange={(e) => setFormData({ ...formData, coverImg: e.target.value })}
-                className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"
-              />
-            </div>
+            <ImageUploader
+              label="Imagem de Capa do Artigo"
+              value={formData.coverImg}
+              onChange={(url) => setFormData({ ...formData, coverImg: url })}
+            />
 
             <div>
               <label className="block text-xs font-bold uppercase text-white/70 mb-2">

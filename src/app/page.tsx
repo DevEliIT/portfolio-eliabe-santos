@@ -6,24 +6,33 @@ import Image from "next/image";
 import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
 import { Project } from "@/types/project";
-import { Code2, LayoutGrid, ChevronDown, ArrowRight } from "lucide-react";
+import { Post } from "@/types/post";
+import { Code2, LayoutGrid, ChevronDown, ArrowRight, BookOpen, Clock, Calendar } from "lucide-react";
 
 export default function HomePage() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    async function loadProjects() {
+    async function loadData() {
       try {
-        const res = await fetch("/api/projects");
-        if (res.ok) {
-          const data = await res.json();
-          setProjects(data);
+        const [resProjects, resPosts] = await Promise.all([
+          fetch("/api/projects"),
+          fetch("/api/posts"),
+        ]);
+        if (resProjects.ok) {
+          const dataProjects = await resProjects.json();
+          setProjects(dataProjects);
+        }
+        if (resPosts.ok) {
+          const dataPosts = await resPosts.json();
+          setPosts(dataPosts);
         }
       } catch (err) {
         console.error(err);
       }
     }
-    loadProjects();
+    loadData();
   }, []);
 
   return (
@@ -274,6 +283,93 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* BLOG SECTION ON HOME */}
+        {posts.length > 0 && (
+          <section className="py-20 px-8 md:px-20 bg-[#161927] border-t border-white/5">
+            <div className="max-w-5xl mx-auto">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-10">
+                <div>
+                  <div
+                    className="w-8 h-1 mb-4"
+                    style={{ backgroundColor: "#e84040" }}
+                  />
+                  <h2
+                    className="text-3xl md:text-4xl font-extrabold uppercase tracking-tight text-white"
+                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                  >
+                    Últimos Artigos
+                  </h2>
+                </div>
+                <Link
+                  href="/blog"
+                  className="text-[10px] font-bold tracking-widest uppercase px-5 py-2.5 rounded-full border transition-all hover:bg-white/10 flex items-center gap-1.5"
+                  style={{ borderColor: "rgba(255,255,255,0.35)", color: "rgba(255,255,255,0.75)" }}
+                >
+                  Ir para o Blog
+                  <ArrowRight size={12} />
+                </Link>
+              </div>
+
+              {/* Blog Posts Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {posts.slice(0, 3).map((post) => (
+                  <Link
+                    key={post.id}
+                    href={`/blog/${post.slug}`}
+                    className="group flex flex-col bg-[#1e2235] rounded-xl overflow-hidden border border-white/10 hover:border-[#e84040]/50 transition-all duration-300 hover:-translate-y-1 shadow-lg"
+                  >
+                    <div className="relative aspect-[16/10] overflow-hidden">
+                      <Image
+                        src={post.coverImg}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                      <div className="absolute top-3 left-3 bg-[#e84040] text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded shadow">
+                        {post.category}
+                      </div>
+                    </div>
+
+                    <div className="p-6 flex flex-col flex-1 justify-between">
+                      <div>
+                        <div className="flex items-center gap-3 text-[10px] text-white/40 font-mono mb-2">
+                          <span className="flex items-center gap-1">
+                            <Calendar size={11} /> {post.publishedAt}
+                          </span>
+                          <span>•</span>
+                          <span className="flex items-center gap-1">
+                            <Clock size={11} /> {post.readTime}
+                          </span>
+                        </div>
+
+                        <h3 className="text-base font-bold uppercase tracking-tight text-white group-hover:text-[#e84040] transition-colors mb-3 leading-snug">
+                          {post.title}
+                        </h3>
+
+                        <p
+                          className="text-xs text-white/70 leading-relaxed mb-6 line-clamp-2"
+                          style={{ fontFamily: "'Open Sans', sans-serif" }}
+                        >
+                          {post.subtitle}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
+                        <span className="text-[10px] text-white/50">Por {post.author}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#e84040] group-hover:translate-x-1 transition-transform">
+                          Ler mais &rarr;
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
       </main>
 
       <Footer />

@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, Plus, Trash, Image as ImageIcon } from "lucide-react";
+import { ImageUploader } from "@/app/components/ImageUploader";
+import { MultiImageUploader } from "@/app/components/MultiImageUploader";
+import { ArrowLeft, Save } from "lucide-react";
 
 export default function NewProjectPage() {
   const router = useRouter();
@@ -20,13 +22,13 @@ export default function NewProjectPage() {
     client: "",
     year: new Date().getFullYear().toString(),
     role: "Front-end Developer & UI Designer",
-    coverImg: "https://images.unsplash.com/photo-1558655146-d09347e92766?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
+    coverImg: "",
     featured: false,
     technologiesStr: "React, Next.js, TypeScript, Tailwind CSS",
     challenges: "",
     solution: "",
     keyFeaturesStr: "",
-    galleryStr: "",
+    gallery: [] as string[],
     liveUrl: "",
     githubUrl: "",
   });
@@ -58,7 +60,7 @@ export default function NewProjectPage() {
         challenges: formData.challenges,
         solution: formData.solution,
         keyFeatures: formData.keyFeaturesStr.split("\n").map((f) => f.trim()).filter(Boolean),
-        gallery: formData.galleryStr.split("\n").map((g) => g.trim()).filter(Boolean),
+        gallery: formData.gallery,
         liveUrl: formData.liveUrl,
         githubUrl: formData.githubUrl,
       };
@@ -214,21 +216,19 @@ export default function NewProjectPage() {
               Imagens & Links
             </h2>
 
-            <div>
-              <label className="block text-xs font-bold uppercase text-white/70 mb-2">
-                URL da Imagem de Capa *
-              </label>
-              <input
-                type="url"
-                required
-                placeholder="https://images.unsplash.com/..."
-                value={formData.coverImg}
-                onChange={(e) => setFormData({ ...formData, coverImg: e.target.value })}
-                className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"
-              />
-            </div>
+            <ImageUploader
+              label="Imagem de Capa do Projeto"
+              value={formData.coverImg}
+              onChange={(url) => setFormData({ ...formData, coverImg: url })}
+            />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <MultiImageUploader
+              label="Galeria de Capturas de Tela"
+              value={formData.gallery}
+              onChange={(urls) => setFormData({ ...formData, gallery: urls })}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
               <div>
                 <label className="block text-xs font-bold uppercase text-white/70 mb-2">
                   URL do Projeto Ao Vivo (opcional)
@@ -255,19 +255,6 @@ export default function NewProjectPage() {
                 />
               </div>
             </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase text-white/70 mb-2">
-                Imagens da Galeria (Uma URL por linha)
-              </label>
-              <textarea
-                rows={3}
-                placeholder="https://images.unsplash.com/photo-1&#10;https://images.unsplash.com/photo-2"
-                value={formData.galleryStr}
-                onChange={(e) => setFormData({ ...formData, galleryStr: e.target.value })}
-                className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"
-              />
-            </div>
           </div>
 
           {/* Descrições e Detalhes */}
@@ -291,7 +278,7 @@ export default function NewProjectPage() {
 
             <div>
               <label className="block text-xs font-bold uppercase text-white/70 mb-2">
-                Resumo Curto (Para os cards)
+                Resumo Curto
               </label>
               <textarea
                 rows={2}
@@ -335,7 +322,7 @@ export default function NewProjectPage() {
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Qual foi o principal desafio enfrentado no desenvolvimento..."
+                  placeholder="Qual foi o principal desafio enfrentado..."
                   value={formData.challenges}
                   onChange={(e) => setFormData({ ...formData, challenges: e.target.value })}
                   className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"
@@ -348,7 +335,7 @@ export default function NewProjectPage() {
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Como a solução foi desenvolvida e implementada..."
+                  placeholder="Como a solução foi desenvolvida..."
                   value={formData.solution}
                   onChange={(e) => setFormData({ ...formData, solution: e.target.value })}
                   className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"
@@ -362,7 +349,7 @@ export default function NewProjectPage() {
               </label>
               <textarea
                 rows={3}
-                placeholder="Dashboard com gráficos interativos&#10;Alertas em tempo real&#10;Exportação de relatórios"
+                placeholder="Dashboard com gráficos interativos&#10;Alertas em tempo real"
                 value={formData.keyFeaturesStr}
                 onChange={(e) => setFormData({ ...formData, keyFeaturesStr: e.target.value })}
                 className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"

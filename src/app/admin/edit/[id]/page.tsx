@@ -3,7 +3,9 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, Trash2, ExternalLink } from "lucide-react";
+import { ImageUploader } from "@/app/components/ImageUploader";
+import { MultiImageUploader } from "@/app/components/MultiImageUploader";
+import { ArrowLeft, Save } from "lucide-react";
 
 interface EditProps {
   params: Promise<{ id: string }>;
@@ -32,7 +34,7 @@ export default function EditProjectPage({ params }: EditProps) {
     challenges: "",
     solution: "",
     keyFeaturesStr: "",
-    galleryStr: "",
+    gallery: [] as string[],
     liveUrl: "",
     githubUrl: "",
   });
@@ -59,7 +61,7 @@ export default function EditProjectPage({ params }: EditProps) {
             challenges: project.challenges || "",
             solution: project.solution || "",
             keyFeaturesStr: (project.keyFeatures || []).join("\n"),
-            galleryStr: (project.gallery || []).join("\n"),
+            gallery: project.gallery || [],
             liveUrl: project.liveUrl || "",
             githubUrl: project.githubUrl || "",
           });
@@ -102,7 +104,7 @@ export default function EditProjectPage({ params }: EditProps) {
         challenges: formData.challenges,
         solution: formData.solution,
         keyFeatures: formData.keyFeaturesStr.split("\n").map((f) => f.trim()).filter(Boolean),
-        gallery: formData.galleryStr.split("\n").map((g) => g.trim()).filter(Boolean),
+        gallery: formData.gallery,
         liveUrl: formData.liveUrl,
         githubUrl: formData.githubUrl,
       };
@@ -262,20 +264,19 @@ export default function EditProjectPage({ params }: EditProps) {
               Imagens & Links
             </h2>
 
-            <div>
-              <label className="block text-xs font-bold uppercase text-white/70 mb-2">
-                URL da Imagem de Capa *
-              </label>
-              <input
-                type="url"
-                required
-                value={formData.coverImg}
-                onChange={(e) => setFormData({ ...formData, coverImg: e.target.value })}
-                className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"
-              />
-            </div>
+            <ImageUploader
+              label="Imagem de Capa do Projeto"
+              value={formData.coverImg}
+              onChange={(url) => setFormData({ ...formData, coverImg: url })}
+            />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <MultiImageUploader
+              label="Galeria de Capturas de Tela"
+              value={formData.gallery}
+              onChange={(urls) => setFormData({ ...formData, gallery: urls })}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
               <div>
                 <label className="block text-xs font-bold uppercase text-white/70 mb-2">
                   URL do Projeto Ao Vivo (opcional)
@@ -299,18 +300,6 @@ export default function EditProjectPage({ params }: EditProps) {
                   className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"
                 />
               </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase text-white/70 mb-2">
-                Imagens da Galeria (Uma URL por linha)
-              </label>
-              <textarea
-                rows={3}
-                value={formData.galleryStr}
-                onChange={(e) => setFormData({ ...formData, galleryStr: e.target.value })}
-                className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"
-              />
             </div>
           </div>
 
