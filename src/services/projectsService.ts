@@ -100,6 +100,8 @@ export async function saveProject(project: Omit<Project, "id"> & { id?: string }
   return newProject;
 }
 
+export const createProject = saveProject;
+
 export async function updateProject(id: string, data: Partial<Project>): Promise<Project | null> {
   const existing = await getProjectById(id);
   if (!existing) return null;

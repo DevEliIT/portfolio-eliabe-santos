@@ -100,6 +100,8 @@ export async function savePost(post: Omit<Post, "id"> & { id?: string }): Promis
   return newPost;
 }
 
+export const createPost = savePost;
+
 export async function updatePost(id: string, data: Partial<Post>): Promise<Post | null> {
   const existing = await getPostById(id);
   if (!existing) return null;
