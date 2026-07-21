@@ -1,0 +1,11 @@
+{
+  "/api/posts/route": "app/api/posts/route.js",
+  "/api/projects/route": "app/api/projects/route.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/page": "app/page.js",
+  "/admin/new/page": "app/admin/new/page.js",
+  "/blog/page": "app/blog/page.js",
+  "/blog/[slug]/page": "app/blog/[slug]/page.js",
+  "/projects/page": "app/projects/page.js",
+  "/admin/page": "app/admin/page.js"
+}

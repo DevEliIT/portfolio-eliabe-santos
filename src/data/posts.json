@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1",
+    "slug": "nextjs-15-app-router-performance",
+    "title": "Como o Next.js 15 e o App Router Revolucionaram a Performance Web",
+    "subtitle": "Uma análise aprofundada sobre Server Components, estratégias de cache e renderização híbrida para aplicações ultra rápidas.",
+    "content": "O ecossistema do React e do desenvolvimento web mudou drasticamente com a chegada do **Next.js 15** e a consolidação do **App Router**. Neste artigo, vamos explorar como os Server Components e a renderização no servidor transformaram a experiência do usuário e a otimização nos buscadores.\n\n### O Poder dos Server Components\n\nPor anos, as aplicações React SPAs (Single Page Applications) exigiram o envio de pacotes JavaScript massivos para o navegador do cliente. Com os **React Server Components (RSC)**, o código é executado exclusivamente no servidor, enviando para o cliente apenas a árvore HTML pré-renderizada e o CSS mínimo necessário.\n\nIsso resulta em:\n- **First Contentful Paint (FCP)** quase instantâneo.\n- **Zero peso no pacote JS** para dependências pesadas executadas no servidor.\n- **Segurança aprimorada** ao lidar com chaves de API e acesso direto ao banco de dados.\n\n### Estratégias de Caching no Next.js 15\n\nNo Next.js 15, o comportamento do `fetch` e das rotas foi refinado para dar maior controle explícito aos desenvolvedores sobre o cache de dados (`force-cache` vs `no-store`). Isso previne dados desatualizados indesejados enquanto mantém a velocidade surpreendente de geração estática (SSG).\n\n### Conclusão\n\nAdoptar o App Router não é apenas uma mudança de sintaxe, é uma mudança de paradigma na construção de produtos digitais escaláveis e focados em SEO e performance.",
+    "coverImg": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
+    "category": "Desenvolvimento Web",
+    "author": "Eliabe Santos",
+    "publishedAt": "2024-07-15",
+    "readTime": "5 min de leitura",
+    "featured": true,
+    "tags": ["Next.js", "React", "Performance", "Web Development"]
+  },
+  {
+    "id": "2",
+    "slug": "design-systems-figma-para-frontend",
+    "title": "Design Systems no Figma: Da Prototipagem ao Código Limpo",
+    "subtitle": "Como organizar Design Tokens, componentes reutilizáveis e manter a consistência entre o Figma e o Tailwind CSS.",
+    "content": "A ponte entre o **Design de Interfaces (UI/UX)** e o **Desenvolvimento Front-end** é um dos fatores mais críticos para o sucesso de qualquer produto digital. Um **Design System** bem estruturado garante consistência visual, acelera a entrega e reduz drasticamente o retrabalho.\n\n### 1. Padronização de Design Tokens\n\nDesign Tokens são as variáveis atômicas da sua marca: cores, tipografia, espaçamentos, elevação e bordas. No Figma, a utilização de Variables e Styles deve espelhar exatamente a estrutura do CSS ou das variáveis do **Tailwind CSS**.\n\n### 2. Componentização com Auto Layout\n\nAo criar componentes no Figma usando **Auto Layout 5.0** e propriedades como *flex-grow* e *fill container*, os designers passam a pensar na mesma lógica de caixa (Box Model) e flexbox que os desenvolvedores utilizam no CSS.\n\n### 3. Documentação e Handoff\n\nUtilizar ferramentas de handoff integradas e manter um guia claro de estados (hover, active, disabled, focus) é essencial para evitar discrepâncias entre o protótipo e a aplicação publicada.",
+    "coverImg": "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
+    "category": "UI/UX Design",
+    "author": "Eliabe Santos",
+    "publishedAt": "2024-06-28",
+    "readTime": "4 min de leitura",
+    "featured": false,
+    "tags": ["Figma", "Design System", "UI/UX", "Tailwind CSS"]
+  },
+  {
+    "id": "3",
+    "slug": "guia-definitivo-tailwind-css-v4-typescript",
+    "title": "O Guia Definitivo do Tailwind CSS v4 e TypeScript",
+    "subtitle": "Descubra as novidades do motor Rust Oxide, importações atômicas e integração com projetos modernos.",
+    "content": "O **Tailwind CSS v4** trouxe uma reformulação completa sob o capô com o motor Oxide escrito em Rust, entregando builds até 10x mais rápidas e uma sintaxe de configuração simplificada via CSS puro.\n\n### Novidades Principais do Tailwind v4:\n\n1. **Sem arquivo tailwind.config.js por padrão**: Toda a customização de temas e utilitários agora é feita diretamente no seu arquivo CSS principal utilizando diretivas como `@theme`.\n2. **Performance Extrema**: Compilação instantânea com suporte nativo a PostCSS e Vite/Next.js.\n3. **Variáveis Nativas em CSS**: Maior flexibilidade no consumo de cores dinâmicas e variáveis globais.\n\nIntegrar o Tailwind v4 com **TypeScript** garante autocompletar e validação estática das suas classes utilitárias e temas customizados.",
+    "coverImg": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
+    "category": "Front-end",
+    "author": "Eliabe Santos",
+    "publishedAt": "2024-05-10",
+    "readTime": "6 min de leitura",
+    "featured": false,
+    "tags": ["Tailwind CSS", "CSS", "TypeScript", "Front-end"]
+  }
+]
