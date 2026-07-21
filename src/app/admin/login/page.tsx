@@ -92,9 +92,6 @@ export default function AdminLoginPage() {
                 className="w-full bg-[#161927] border border-white/10 rounded-lg pl-10 pr-4 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#e84040] transition-colors"
               />
             </div>
-            <p className="text-[10px] text-white/40 mt-1.5 font-mono">
-              Senha padrão inicial: <span className="text-[#e84040]">admin123</span>
-            </p>
           </div>
 
           <button

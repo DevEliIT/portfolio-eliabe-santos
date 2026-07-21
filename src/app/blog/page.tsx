@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
 import { Post } from "@/types/post";
-import { Search, Clock, Calendar, Tag, ArrowRight, BookOpen, RefreshCw } from "lucide-react";
+import { Search, Clock, Calendar, ArrowRight, RefreshCw } from "lucide-react";
 
 export default function BlogCatalogPage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -56,7 +57,12 @@ export default function BlogCatalogPage() {
 
       <main className="flex-1 pt-28 pb-20 px-8 md:px-20 max-w-6xl mx-auto w-full">
         {/* HEADER SECTION */}
-        <section className="mb-12 text-center md:text-left">
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12 text-center md:text-left"
+        >
           <div className="w-8 h-1 mb-4 mx-auto md:mx-0" style={{ backgroundColor: "#e84040" }} />
           <h1 className="text-4xl md:text-6xl font-extrabold uppercase tracking-tight text-white mb-4">
             Blog & Artigos
@@ -67,11 +73,17 @@ export default function BlogCatalogPage() {
           >
             Pensamentos, tutoriais e reflexões sobre desenvolvimento front-end, arquitetura web, UI/UX e tecnologia.
           </p>
-        </section>
+        </motion.section>
 
         {/* FEATURED POST BANNER */}
         {featuredPost && !search && selectedCategory === "Todos" && (
-          <section className="mb-16">
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            whileHover={{ scale: 1.01 }}
+            className="mb-16"
+          >
             <Link
               href={`/blog/${featuredPost.slug}`}
               className="group relative grid grid-cols-1 lg:grid-cols-12 gap-8 bg-white/[0.02] rounded-2xl overflow-hidden border border-white/10 hover:border-[#e84040]/50 transition-all p-6 md:p-8 shadow-2xl"
@@ -120,17 +132,24 @@ export default function BlogCatalogPage() {
                 </div>
               </div>
             </Link>
-          </section>
+          </motion.section>
         )}
 
         {/* SEARCH & FILTERS */}
-        <section className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 border-b border-white/10 pb-6">
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 border-b border-white/10 pb-6"
+        >
           {/* Categories */}
           <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
             {categories.map((cat) => (
-              <button
+              <motion.button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 className={`text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full transition-all border ${
                   selectedCategory === cat
                     ? "bg-[#e84040] text-white border-[#e84040]"
@@ -138,7 +157,7 @@ export default function BlogCatalogPage() {
                 }`}
               >
                 {cat}
-              </button>
+              </motion.button>
             ))}
           </div>
 
@@ -153,7 +172,7 @@ export default function BlogCatalogPage() {
               className="w-full bg-[#161927] border border-white/10 rounded-full pl-10 pr-4 py-2 text-xs text-white placeholder-white/40 focus:outline-none focus:border-[#e84040]"
             />
           </div>
-        </section>
+        </motion.section>
 
         {/* POSTS GRID */}
         {loading ? (
@@ -165,66 +184,77 @@ export default function BlogCatalogPage() {
             Nenhum artigo encontrado.
           </div>
         ) : (
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {regularPosts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/blog/${post.slug}`}
-                className="group flex flex-col bg-white/[0.02] rounded-xl overflow-hidden border border-white/10 hover:border-[#e84040]/50 transition-all duration-300 hover:-translate-y-1 shadow-lg"
-              >
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <Image
-                    src={post.coverImg}
-                    alt={post.title}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                  <div className="absolute top-3 left-3 bg-[#e84040] text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded shadow">
-                    {post.category}
-                  </div>
-                </div>
-
-                <div className="p-6 flex flex-col flex-1 justify-between">
-                  <div>
-                    <div className="flex items-center gap-3 text-[10px] text-white/40 font-mono mb-2">
-                      <span className="flex items-center gap-1">
-                        <Calendar size={11} /> {post.publishedAt}
-                      </span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1">
-                        <Clock size={11} /> {post.readTime}
-                      </span>
+          <motion.section layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <AnimatePresence>
+              {regularPosts.map((post) => (
+                <motion.div
+                  key={post.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.4 }}
+                  whileHover={{ y: -6 }}
+                >
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="group flex flex-col bg-white/[0.02] rounded-xl overflow-hidden border border-white/10 hover:border-[#e84040]/50 transition-all duration-300 shadow-lg h-full"
+                  >
+                    <div className="relative aspect-[16/10] overflow-hidden">
+                      <Image
+                        src={post.coverImg}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                      <div className="absolute top-3 left-3 bg-[#e84040] text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded shadow">
+                        {post.category}
+                      </div>
                     </div>
 
-                    <h3 className="text-lg font-bold uppercase tracking-tight text-white group-hover:text-[#e84040] transition-colors mb-3 leading-snug">
-                      {post.title}
-                    </h3>
+                    <div className="p-6 flex flex-col flex-1 justify-between">
+                      <div>
+                        <div className="flex items-center gap-3 text-[10px] text-white/40 font-mono mb-2">
+                          <span className="flex items-center gap-1">
+                            <Calendar size={11} /> {post.publishedAt}
+                          </span>
+                          <span>•</span>
+                          <span className="flex items-center gap-1">
+                            <Clock size={11} /> {post.readTime}
+                          </span>
+                        </div>
 
-                    <p
-                      className="text-xs text-white/70 leading-relaxed mb-6 line-clamp-3"
-                      style={{ fontFamily: "'Open Sans', sans-serif" }}
-                    >
-                      {post.subtitle}
-                    </p>
-                  </div>
+                        <h3 className="text-lg font-bold uppercase tracking-tight text-white group-hover:text-[#e84040] transition-colors mb-3 leading-snug">
+                          {post.title}
+                        </h3>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
-                    <div className="flex flex-wrap gap-1">
-                      {post.tags?.slice(0, 2).map((t) => (
-                        <span key={t} className="text-[9px] text-white/50 bg-white/5 px-2 py-0.5 rounded">
-                          #{t}
+                        <p
+                          className="text-xs text-white/70 leading-relaxed mb-6 line-clamp-3"
+                          style={{ fontFamily: "'Open Sans', sans-serif" }}
+                        >
+                          {post.subtitle}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
+                        <div className="flex flex-wrap gap-1">
+                          {post.tags?.slice(0, 2).map((t) => (
+                            <span key={t} className="text-[9px] text-white/50 bg-white/5 px-2 py-0.5 rounded">
+                              #{t}
+                            </span>
+                          ))}
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#e84040] group-hover:translate-x-1 transition-transform">
+                          Ler &rarr;
                         </span>
-                      ))}
+                      </div>
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#e84040] group-hover:translate-x-1 transition-transform">
-                      Ler &rarr;
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </section>
+                  </Link>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.section>
         )}
       </main>
 
