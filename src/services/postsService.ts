@@ -1,87 +1,111 @@
 import fs from "fs/promises";
 import path from "path";
 import { Post } from "@/types/post";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
-const JSON_FILE_PATH = path.join(process.cwd(), "src", "data", "posts.json");
+const postsFilePath = path.join(process.cwd(), "src", "data", "posts.json");
 
-async function ensureDataFileExists(): Promise<void> {
+// Helper to read local JSON
+async function readLocalPosts(): Promise<Post[]> {
   try {
-    await fs.access(JSON_FILE_PATH);
-  } catch {
-    const dir = path.dirname(JSON_FILE_PATH);
-    await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(JSON_FILE_PATH, "[]", "utf-8");
-  }
-}
-
-export async function getAllPosts(): Promise<Post[]> {
-  try {
-    await ensureDataFileExists();
-    const data = await fs.readFile(JSON_FILE_PATH, "utf-8");
-    return JSON.parse(data) as Post[];
+    const data = await fs.readFile(postsFilePath, "utf-8");
+    return JSON.parse(data);
   } catch (error) {
-    console.error("Error reading posts JSON:", error);
+    console.error("Error reading local posts.json:", error);
     return [];
   }
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | null> {
-  const posts = await getAllPosts();
-  return posts.find((p) => p.slug === slug) || null;
+// Helper to write local JSON
+async function writeLocalPosts(posts: Post[]): Promise<void> {
+  await fs.writeFile(postsFilePath, JSON.stringify(posts, null, 2), "utf-8");
+}
+
+export async function getAllPosts(): Promise<Post[]> {
+  if (isSupabaseConfigured() && supabase) {
+    try {
+      const { data, error } = await supabase.from("posts").select("*").order("created_at", { ascending: false });
+      if (!error && data) return data as Post[];
+    } catch (err) {
+      console.error("Supabase fetch posts failed, falling back to local JSON", err);
+    }
+  }
+  return readLocalPosts();
 }
 
 export async function getPostById(id: string): Promise<Post | null> {
-  const posts = await getAllPosts();
+  if (isSupabaseConfigured() && supabase) {
+    try {
+      const { data, error } = await supabase.from("posts").select("*").eq("id", id).single();
+      if (!error && data) return data as Post;
+    } catch (err) {
+      console.error("Supabase fetch post by ID failed", err);
+    }
+  }
+  const posts = await readLocalPosts();
   return posts.find((p) => p.id === id) || null;
 }
 
-export async function getAdjacentPosts(currentSlug: string) {
-  const posts = await getAllPosts();
-  const currentIndex = posts.findIndex((p) => p.slug === currentSlug);
-  if (currentIndex === -1) return { prev: null, next: null };
-  const prev = posts[(currentIndex - 1 + posts.length) % posts.length];
-  const next = posts[(currentIndex + 1) % posts.length];
-  return { prev, next };
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  if (isSupabaseConfigured() && supabase) {
+    try {
+      const { data, error } = await supabase.from("posts").select("*").eq("slug", slug).single();
+      if (!error && data) return data as Post;
+    } catch (err) {
+      console.error("Supabase fetch post by slug failed", err);
+    }
+  }
+  const posts = await readLocalPosts();
+  return posts.find((p) => p.slug === slug) || null;
 }
 
-export async function createPost(postData: Omit<Post, "id">): Promise<Post> {
-  const posts = await getAllPosts();
-  
-  const slug = postData.slug || postData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
-  
+export async function savePost(post: Omit<Post, "id"> & { id?: string }): Promise<Post> {
   const newPost: Post = {
-    ...postData,
-    id: Date.now().toString(),
-    slug,
-    publishedAt: postData.publishedAt || new Date().toISOString().split("T")[0],
-    author: postData.author || "Eliabe Santos",
+    ...post,
+    id: post.id || Date.now().toString(),
   };
 
-  posts.unshift(newPost); // add to top
-  await fs.writeFile(JSON_FILE_PATH, JSON.stringify(posts, null, 2), "utf-8");
+  if (isSupabaseConfigured() && supabase) {
+    try {
+      const { data, error } = await supabase.from("posts").upsert(newPost).select().single();
+      if (!error && data) return data as Post;
+    } catch (err) {
+      console.error("Supabase save post failed", err);
+    }
+  }
+
+  // Local fallback
+  const posts = await readLocalPosts();
+  const existingIndex = posts.findIndex((p) => p.id === newPost.id);
+
+  if (existingIndex >= 0) {
+    posts[existingIndex] = newPost;
+  } else {
+    posts.unshift(newPost);
+  }
+
+  await writeLocalPosts(posts);
   return newPost;
 }
 
-export async function updatePost(id: string, postData: Partial<Post>): Promise<Post | null> {
-  const posts = await getAllPosts();
-  const index = posts.findIndex((p) => p.id === id);
-  if (index === -1) return null;
-
-  const updatedPost: Post = {
-    ...posts[index],
-    ...postData,
-  };
-
-  posts[index] = updatedPost;
-  await fs.writeFile(JSON_FILE_PATH, JSON.stringify(posts, null, 2), "utf-8");
-  return updatedPost;
-}
-
 export async function deletePost(id: string): Promise<boolean> {
-  const posts = await getAllPosts();
-  const filtered = posts.filter((p) => p.id !== id);
-  if (filtered.length === posts.length) return false;
+  if (isSupabaseConfigured() && supabase) {
+    try {
+      const { error } = await supabase.from("posts").delete().eq("id", id);
+      if (!error) return true;
+    } catch (err) {
+      console.error("Supabase delete post failed", err);
+    }
+  }
 
-  await fs.writeFile(JSON_FILE_PATH, JSON.stringify(filtered, null, 2), "utf-8");
+  // Local fallback
+  const posts = await readLocalPosts();
+  const filtered = posts.filter((p) => p.id !== id);
+
+  if (filtered.length === posts.length) {
+    return false;
+  }
+
+  await writeLocalPosts(filtered);
   return true;
 }

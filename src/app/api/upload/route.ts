@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
 
@@ -14,7 +15,6 @@ async function ensureUploadsDirExists() {
 
 export async function POST(request: Request) {
   try {
-    await ensureUploadsDirExists();
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
 
@@ -25,11 +25,36 @@ export async function POST(request: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Generate unique filename with original or webp extension
     const ext = path.extname(file.name) || ".webp";
     const filename = `img-${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`;
-    const filePath = path.join(UPLOADS_DIR, filename);
 
+    // 1. SUPABASE STORAGE PERSISTENCE (If active on Vercel)
+    if (isSupabaseConfigured() && supabase) {
+      try {
+        const { data, error } = await supabase.storage
+          .from("portfolio-images")
+          .upload(filename, buffer, {
+            contentType: file.type || "image/webp",
+            upsert: true,
+          });
+
+        if (!error && data) {
+          const { data: publicUrlData } = supabase.storage
+            .from("portfolio-images")
+            .getPublicUrl(filename);
+
+          return NextResponse.json({ url: publicUrlData.publicUrl, size: buffer.length });
+        } else {
+          console.error("Supabase Storage upload error:", error);
+        }
+      } catch (supabaseErr) {
+        console.error("Supabase Storage exception:", supabaseErr);
+      }
+    }
+
+    // 2. LOCAL DISK STORAGE FALLBACK (For local dev)
+    await ensureUploadsDirExists();
+    const filePath = path.join(UPLOADS_DIR, filename);
     await fs.writeFile(filePath, buffer);
 
     const publicUrl = `/uploads/${filename}`;

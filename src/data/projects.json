@@ -1,42 +1,5 @@
 [
   {
-    "id": "1",
-    "slug": "neurohealth",
-    "title": "NeuroHealth",
-    "category": "UI/UX Design",
-    "subtitle": "Plataforma de Monitoramento e Diagnóstico de Saúde Neurológica",
-    "summary": "Interface intuitiva desenvolvida para profissionais de saúde acompanharem métricas e exames neurológicos de pacientes em tempo real.",
-    "description": "O NeuroHealth é uma plataforma médica de alta precisão desenhada para simplificar a visualização de dados complexos de exames cerebrais e neurológicos. A solução conecta médicos especialistas a dados em tempo real através de dashboards inteligentes e alertas preditivos baseados em machine learning.",
-    "client": "NeuroHealth Labs",
-    "year": "2024",
-    "role": "UI/UX Designer & Lead Designer",
-    "coverImg": "https://images.unsplash.com/photo-1558655146-d09347e92766?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWIlMjBkZXNpZ24lMjBwb3J0Zm9saW8lMjB3b3JrfGVufDF8fHx8MTc4NDY1NjIwNnww&ixlib=rb-4.1.0&q=80&w=1200",
-    "featured": true,
-    "technologies": [
-      "Figma",
-      "UI/UX Design",
-      "Design System",
-      "Prototipagem",
-      "User Research",
-      "Tailwind CSS"
-    ],
-    "challenges": "Trabalhar com grande volume de dados médicos críticos exige altíssima clareza visual, prevenção de erros do usuário e uma arquitetura de informação focada em urgência médica.",
-    "solution": "Desenvolvemos um sistema de design escuro de alto contraste, com hierarquia tipográfica rigorosa, cards de sinalização por cores normalizados e acesso a históricos em apenas 2 cliques.",
-    "keyFeatures": [
-      "Dashboard analítico com relatórios gráficos interativos de eletroencefalograma.",
-      "Sistema de alertas em tempo real para variações de ondas cerebrais.",
-      "Prontuário digital integrado com controle de acesso por níveis de especialidade médica.",
-      "Design System completo exportado no Figma e documentado com tokens de estilo."
-    ],
-    "gallery": [
-      "https://images.unsplash.com/photo-1558655146-d09347e92766?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1000",
-      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1000",
-      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1000"
-    ],
-    "liveUrl": "https://example.com/neurohealth",
-    "githubUrl": "https://github.com/example/neurohealth"
-  },
-  {
     "id": "3",
     "slug": "dashboard",
     "title": "Analytics Dashboard",
