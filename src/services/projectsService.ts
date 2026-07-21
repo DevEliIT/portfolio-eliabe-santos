@@ -59,6 +59,18 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   return projects.find((p) => p.slug === slug) || null;
 }
 
+export async function getAdjacentProjects(currentSlug: string): Promise<{ prev: Project | null; next: Project | null }> {
+  const projects = await getAllProjects();
+  const index = projects.findIndex((p) => p.slug === currentSlug);
+
+  if (index === -1) return { prev: null, next: null };
+
+  const prev = index > 0 ? projects[index - 1] : null;
+  const next = index < projects.length - 1 ? projects[index + 1] : null;
+
+  return { prev, next };
+}
+
 export async function saveProject(project: Omit<Project, "id"> & { id?: string }): Promise<Project> {
   const newProject: Project = {
     ...project,
@@ -86,6 +98,13 @@ export async function saveProject(project: Omit<Project, "id"> & { id?: string }
 
   await writeLocalProjects(projects);
   return newProject;
+}
+
+export async function updateProject(id: string, data: Partial<Project>): Promise<Project | null> {
+  const existing = await getProjectById(id);
+  if (!existing) return null;
+  const updatedData = { ...existing, ...data, id };
+  return saveProject(updatedData);
 }
 
 export async function deleteProject(id: string): Promise<boolean> {

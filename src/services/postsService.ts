@@ -59,6 +59,18 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   return posts.find((p) => p.slug === slug) || null;
 }
 
+export async function getAdjacentPosts(currentSlug: string): Promise<{ prev: Post | null; next: Post | null }> {
+  const posts = await getAllPosts();
+  const index = posts.findIndex((p) => p.slug === currentSlug);
+
+  if (index === -1) return { prev: null, next: null };
+
+  const prev = index > 0 ? posts[index - 1] : null;
+  const next = index < posts.length - 1 ? posts[index + 1] : null;
+
+  return { prev, next };
+}
+
 export async function savePost(post: Omit<Post, "id"> & { id?: string }): Promise<Post> {
   const newPost: Post = {
     ...post,
@@ -86,6 +98,13 @@ export async function savePost(post: Omit<Post, "id"> & { id?: string }): Promis
 
   await writeLocalPosts(posts);
   return newPost;
+}
+
+export async function updatePost(id: string, data: Partial<Post>): Promise<Post | null> {
+  const existing = await getPostById(id);
+  if (!existing) return null;
+  const updatedData = { ...existing, ...data, id };
+  return savePost(updatedData);
 }
 
 export async function deletePost(id: string): Promise<boolean> {
