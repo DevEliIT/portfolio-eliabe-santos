@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
+import { ProjectGallery } from "@/app/components/ProjectGallery";
 import { getAllProjects, getProjectBySlug, getAdjacentProjects } from "@/services/projectsService";
 import { ArrowLeft, ExternalLink, Github, Calendar, User, Code2, CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react";
 import type { Metadata } from "next";
@@ -24,24 +25,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!project) return { title: "Projeto Não Encontrado" };
 
   return {
-    title: project.title,
+    title: `${project.title} | Portfólio Eliabe Santos`,
     description: project.summary,
     openGraph: {
-      title: `${project.title} | Eliabe Santos`,
-      description: project.summary,
-      type: "article",
-      images: [
-        {
-          url: project.coverImg,
-          width: 1200,
-          height: 630,
-          alt: project.title,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${project.title} | Eliabe Santos`,
+      title: project.title,
       description: project.summary,
       images: [project.coverImg],
     },
@@ -58,94 +45,64 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
   const { prev, next } = await getAdjacentProjects(slug);
 
-  // CreativeWork JSON-LD Schema.org Data for GEO & Search Engines
-  const projectJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    name: project.title,
-    headline: project.subtitle,
-    description: project.description,
-    image: project.coverImg,
-    author: {
-      "@type": "Person",
-      name: "Eliabe Santos",
-    },
-    datePublished: `${project.year}-01-01`,
-    keywords: project.technologies.join(", "),
-  };
-
   return (
     <div className="min-h-screen bg-[#1e2235] text-white flex flex-col font-sans" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-      {/* Inject CreativeWork JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectJsonLd) }}
-      />
-
       <Navbar />
 
-      <main className="flex-1 pt-24 pb-20">
-        {/* HERO SECTION */}
-        <section className="px-8 md:px-20 max-w-6xl mx-auto pt-6 pb-12">
-          {/* Breadcrumb / Back button */}
+      <main className="flex-1 pt-28 pb-20">
+        {/* HEADER & NAV BACK */}
+        <div className="px-8 md:px-20 max-w-6xl mx-auto mb-8">
           <Link
             href="/projects"
-            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-white/60 hover:text-[#e84040] transition-colors mb-8 group"
+            className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-white/60 hover:text-[#e84040] transition-colors mb-6"
           >
-            <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" />
-            Voltar para Projetos
+            <ArrowLeft size={16} /> Voltar aos Projetos
           </Link>
 
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-3">
-              <span
-                className="text-[10px] font-bold tracking-[0.25em] uppercase px-3 py-1 rounded bg-[#e84040]/10 border border-[#e84040]/30"
-                style={{ color: "#e84040" }}
-              >
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <span className="text-xs font-bold tracking-[0.2em] uppercase text-[#e84040] block mb-2">
                 {project.category}
               </span>
-              <span className="text-xs text-white/40 font-mono">/ {project.year}</span>
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold uppercase tracking-tight text-white mb-4">
+                {project.title}
+              </h1>
+              <p
+                className="text-base md:text-lg text-white/70 font-light max-w-2xl"
+                style={{ fontFamily: "'Open Sans', sans-serif" }}
+              >
+                {project.subtitle}
+              </p>
             </div>
 
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold uppercase tracking-tight text-white leading-tight">
-              {project.title}
-            </h1>
-
-            <p
-              className="text-base md:text-xl text-white/70 max-w-3xl font-light leading-relaxed"
-              style={{ fontFamily: "'Open Sans', sans-serif" }}
-            >
-              {project.subtitle}
-            </p>
+            {/* ACTION BUTTONS */}
+            <div className="flex items-center gap-3 shrink-0">
+              {project.liveUrl && (
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase px-6 py-3 rounded-full text-white transition-all shadow-lg hover:opacity-90"
+                  style={{ backgroundColor: "#e84040" }}
+                >
+                  Ver Projeto Ao Vivo
+                  <ExternalLink size={14} />
+                </a>
+              )}
+              {project.githubUrl && (
+                <a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase px-5 py-3 rounded-full border border-white/20 text-white hover:bg-white/10 transition-colors"
+                >
+                  GitHub
+                  <Github size={14} />
+                </a>
+              )}
+            </div>
           </div>
-
-          {/* Action Links */}
-          <div className="flex flex-wrap items-center gap-4 mt-8">
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase px-6 py-3 rounded-full text-white transition-all hover:opacity-90 shadow-lg shadow-[#e84040]/20"
-                style={{ backgroundColor: "#e84040" }}
-              >
-                Ver Projeto Ao Vivo
-                <ExternalLink size={14} />
-              </a>
-            )}
-            {project.githubUrl && (
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase px-6 py-3 rounded-full border border-white/20 text-white hover:bg-white/10 transition-all"
-              >
-                Código no GitHub
-                <Github size={14} />
-              </a>
-            )}
-          </div>
-        </section>
+        </div>
 
         {/* COVER IMAGE */}
         <section className="px-8 md:px-20 max-w-6xl mx-auto mb-16">
@@ -284,31 +241,8 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        {/* GALLERY GRID */}
-        {project.gallery && project.gallery.length > 0 && (
-          <section className="px-8 md:px-20 max-w-6xl mx-auto mb-20">
-            <div className="w-8 h-1 mb-4" style={{ backgroundColor: "#e84040" }} />
-            <h2 className="text-2xl font-extrabold uppercase tracking-tight text-white mb-8">
-              Galeria do Projeto
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {project.gallery.map((imgUrl, index) => (
-                <div
-                  key={index}
-                  className="relative aspect-video rounded-lg overflow-hidden border border-white/10 group hover:border-[#e84040]/50 transition-colors"
-                >
-                  <Image
-                    src={imgUrl}
-                    alt={`${project.title} screenshot ${index + 1}`}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+        {/* INTERACTIVE LIGHTBOX GALLERY */}
+        <ProjectGallery gallery={project.gallery} title={project.title} />
 
         {/* NEXT / PREVIOUS NAVIGATION */}
         <section className="px-8 md:px-20 max-w-6xl mx-auto pt-10 border-t border-white/10">

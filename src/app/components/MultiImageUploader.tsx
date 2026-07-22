@@ -12,10 +12,11 @@ interface MultiImageUploaderProps {
 
 export function MultiImageUploader({ value = [], onChange, label = "Galeria de Imagens do Projeto" }: MultiImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
+  const [compressEnabled, setCompressEnabled] = useState(true);
   const [uploadCount, setUploadCount] = useState({ current: 0, total: 0 });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Helper Canvas Image Compression
+  // Helper Canvas Image Compression logic with high quality (0.92) and 2000px limit
   const compressImage = (file: File): Promise<Blob> => {
     return new Promise((resolve, reject) => {
       const img = new window.Image();
@@ -27,8 +28,8 @@ export function MultiImageUploader({ value = [], onChange, label = "Galeria de I
 
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        const MAX_WIDTH = 1600;
-        const MAX_HEIGHT = 1600;
+        const MAX_WIDTH = 2000;
+        const MAX_HEIGHT = 2000;
         let width = img.width;
         let height = img.height;
 
@@ -61,7 +62,7 @@ export function MultiImageUploader({ value = [], onChange, label = "Galeria de I
             else reject(new Error("Falha na compressão"));
           },
           "image/webp",
-          0.8
+          0.92
         );
       };
 
@@ -84,15 +85,19 @@ export function MultiImageUploader({ value = [], onChange, label = "Galeria de I
       const file = files[i];
 
       try {
-        const compressedBlob = await compressImage(file);
         const formData = new FormData();
-        const compressedFile = new File(
-          [compressedBlob],
-          file.name.replace(/\.[^/.]+$/, "") + ".webp",
-          { type: "image/webp" }
-        );
 
-        formData.append("file", compressedFile);
+        if (compressEnabled) {
+          const compressedBlob = await compressImage(file);
+          const compressedFile = new File(
+            [compressedBlob],
+            file.name.replace(/\.[^/.]+$/, "") + ".webp",
+            { type: "image/webp" }
+          );
+          formData.append("file", compressedFile);
+        } else {
+          formData.append("file", file);
+        }
 
         const res = await fetch("/api/upload", {
           method: "POST",
@@ -134,13 +139,26 @@ export function MultiImageUploader({ value = [], onChange, label = "Galeria de I
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <label className="block text-xs font-bold uppercase text-white/70">
           {label} ({value.length})
         </label>
-        <span className="text-[10px] text-white/40 font-mono">
-          Compressão automática em WebP leve
-        </span>
+
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="multi-compress-toggle"
+            checked={compressEnabled}
+            onChange={(e) => setCompressEnabled(e.target.checked)}
+            className="w-3.5 h-3.5 rounded border-white/20 accent-[#e84040] cursor-pointer"
+          />
+          <label
+            htmlFor="multi-compress-toggle"
+            className="text-[11px] text-white/75 cursor-pointer select-none font-medium"
+          >
+            Otimizar imagens (WebP Alta Qualidade 92%)
+          </label>
+        </div>
       </div>
 
       {/* Grid of Images */}
@@ -183,7 +201,9 @@ export function MultiImageUploader({ value = [], onChange, label = "Galeria de I
                 <Plus size={18} />
               </div>
               <span className="text-xs font-semibold text-white/80">Adicionar Fotos</span>
-              <span className="text-[9px] text-white/40 mt-0.5">Selecione uma ou mais</span>
+              <span className="text-[9px] text-white/40 mt-0.5">
+                {compressEnabled ? "WebP 92% Alta Definição" : "Qualidade Original Sem Compressão"}
+              </span>
             </>
           )}
         </div>
