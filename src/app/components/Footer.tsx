@@ -24,10 +24,10 @@ export function Footer() {
 
       <div className="flex items-center gap-5">
         {[
-          { icon: <Linkedin size={18} />, label: "LinkedIn", href: "https://linkedin.com" },
-          { icon: <Github size={18} />, label: "GitHub", href: "https://github.com" },
-          { icon: <Twitter size={18} />, label: "Twitter", href: "https://twitter.com" },
-          { icon: <Instagram size={18} />, label: "Instagram", href: "https://instagram.com" },
+          { icon: <Linkedin size={18} />, label: "LinkedIn", href: "https://www.linkedin.com/in/eliabedossantos/" },
+          { icon: <Github size={18} />, label: "GitHub", href: "https://github.com/eliabedossantos" },
+          // { icon: <Twitter size={18} />, label: "Twitter", href: "https://twitter.com" },
+          // { icon: <Instagram size={18} />, label: "Instagram", href: "https://instagram.com" },
         ].map((s) => (
           <a
             key={s.label}
