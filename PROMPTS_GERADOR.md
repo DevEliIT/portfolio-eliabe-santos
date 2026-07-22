@@ -65,51 +65,80 @@ Aqui estão as informações do meu projeto:
 
 ---
 
-## 📝 Prompt 2: Gerador de Artigos Otimizados para o Blog
+## 📝 Prompt 2: Gerador de Artigos Ricos em Markdown para o Blog
 
-Use este prompt para criar tutoriais, artigos de opinião técnica, boas práticas ou guia de ferramentas para a seção `/blog`.
+Use este prompt para criar tutoriais, guias, comparações de tecnologias e artigos técnicos com **Tabelas**, **Blocos de Código**, **Citações**, **Listas** e **Títulos Formatados**.
 
 ```text
-Você é um Tech Writer sênior e criador de conteúdo especializado em Desenvolvimento Front-end, Next.js, React, UI/UX e Arquitetura de Software.
+Você é um Tech Writer sênior e criador de conteúdo técnico especializado em Desenvolvimento Front-end, Next.js, React, TypeScript, UI/UX e Arquitetura de Software.
 
-Quero escrever um artigo para o meu blog pessoal.
-Gere um artigo completo, técnico, moderno e envolvente com base no tema que vou informar abaixo.
+Quero escrever um artigo rico para o meu blog pessoal.
+Gere um artigo completo, profundo e envolvente com base no tema que vou informar abaixo.
+
+Atenção: O conteúdo do artigo DEVE usar sintaxe Markdown completa e limpa (incluindo títulos ## e ###, citações com >, blocos de código ```tsx, tabelas em Markdown e listas com -).
 
 Responda formatado EXATAMENTE segundo a estrutura de campos do meu Painel Admin:
 
 --- MODELO DE RESPOSTA (Copie este formato exato) ---
 
 1. TÍTULO DO ARTIGO:
-[Título direto e atrativo para SEO]
+[Título direto, atrativo e otimizado para SEO]
 
 2. CATEGORIA:
 [Escolha uma: Desenvolvimento Web | Front-end | UI/UX Design | Carreira & Tech]
 
 3. SUBTÍTULO / RESUMO CURTO:
-[Resumo persuasivo de 2 frases que gera curiosidade]
+[Resumo persuasivo de 2 a 3 frases]
 
 4. TEMPO DE LEITURA:
-[Ex: 5 min de leitura]
+[Ex: 6 min de leitura]
 
 5. TAGS (Separadas por vírgula):
-[Ex: Next.js, React, Performance, CSS]
+[Ex: Next.js, React, Design System, TypeScript]
 
-6. CONTEÚDO DO ARTIGO (Em Markdown):
-### Introdução
-[Parágrafo de introdução contextualizando o tema]
+6. CONTEÚDO DO ARTIGO (Copie o Markdown abaixo integralmente):
 
-### [Subtítulo Principal 1]
-[Explicar o conceito principal com clareza. Use código de exemplo em blocos de código se for relevante.]
+> [Citação de impacto ou resumo do artigo em blockquote]
+
+---
+
+## Introdução
+
+[Parágrafos de introdução contextualizando o tema com clareza.]
+
+---
+
+## [Subtítulo Principal 1]
+
+[Explicação técnica abrangente com listas e explicações claras.]
+
+- **Ponto 1**: Detalhe do primeiro aspecto.
+- **Ponto 2**: Detalhe do segundo aspecto.
+
+### Exemplo Prático de Código
 
 ```tsx
-// Exemplo de código limpo se aplicável
+// Código limpo e bem comentado
+export function Exemplo() {
+  return <div>Design System</div>;
+}
 ```
 
-### [Subtítulo Principal 2]
-[Tópicos práticos ou passo a passo das melhores práticas]
+---
 
-### Conclusão
-[Resumo final e encerramento motivador]
+## [Subtítulo Principal 2 - Tabela Comparativa ou Ferramentas]
+
+| Ferramenta | Finalidade | Vantagem |
+|------------|------------|----------|
+| React | Componentes | Reutilização |
+| TypeScript | Tipagem | Segurança de código |
+| Storybook | Documentação | Visualização isolada |
+
+---
+
+## Conclusão
+
+[Conclusão inspiradora e resumo das recomendações finais.]
 
 ---------------------------------------------------
 
@@ -119,7 +148,13 @@ Aqui está o tema / rascunho do meu artigo:
 
 ---
 
-## 💡 Dicas de Uso
+## 💡 Recursos Suportados no Leitor do Blog
 
-1. **Upload de Imagens**: Depois de preencher os dados gerados pela IA, basta usar o novo botão **"Escolher Imagem / Arrastar Arquivo"** do seu Admin para carregar a capa e galeria (que serão comprimidas automaticamente em WebP).
-2. **Edição do Markdown**: No campo de **Conteúdo do Artigo**, você pode usar marcadores `###` para criar subtítulos bonitos com linha decorativa vermelha automaticamente.
+O leitor do blog agora suporta nativamente todas as marcações Markdown:
+
+- **Títulos (`##` e `###`)**: Formatados em caixa alta com linha de destaque vermelha à esquerda.
+- **Citações (`> `)**: Caixas destacadas em itálico com fundo translúcido escuro.
+- **Blocos de Código (```tsx ... ```)**: Caixas de código escuras com identificador de linguagem e fonte mono-espaçada verde.
+- **Tabelas (`| Header | Header |`)**: Tabelas responsivas estilizadas com cabeçalhos vermelhos e linhas zebra.
+- **Listas (`- ` ou `1. `)**: Listas organizadas com espaçamento e marcadores alinhados.
+- **Linhas Divisórias (`---`)**: Linhas finas elegantes para separação de tópicos.

@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
+import { MarkdownRenderer } from "@/app/components/MarkdownRenderer";
 import { getAllPosts, getPostBySlug, getAdjacentPosts } from "@/services/postsService";
 import { ArrowLeft, Calendar, Clock, User, Share2, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 import type { Metadata } from "next";
@@ -24,33 +25,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!post) return { title: "Artigo Não Encontrado" };
 
   return {
-    title: post.title,
+    title: `${post.title} | Blog Eliabe Santos`,
     description: post.subtitle,
     openGraph: {
-      title: `${post.title} | Eliabe Santos Blog`,
-      description: post.subtitle,
-      type: "article",
-      publishedTime: post.publishedAt,
-      authors: [post.author],
-      images: [
-        {
-          url: post.coverImg,
-          width: 1200,
-          height: 630,
-          alt: post.title,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${post.title} | Eliabe Santos Blog`,
+      title: post.title,
       description: post.subtitle,
       images: [post.coverImg],
+      type: "article",
     },
   };
 }
 
-export default async function BlogPostDetailPage({ params }: PageProps) {
+export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
 
@@ -60,8 +46,8 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
 
   const { prev, next } = await getAdjacentPosts(slug);
 
-  // BlogPosting JSON-LD Schema.org for SEO & AI Search Engines
-  const blogPostJsonLd = {
+  // Schema.org BlogPosting for SEO
+  const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
@@ -72,32 +58,26 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
       "@type": "Person",
       name: post.author || "Eliabe Santos",
     },
-    publisher: {
-      "@type": "Person",
-      name: "Eliabe Santos",
-    },
-    keywords: post.tags?.join(", "),
   };
 
   return (
     <div className="min-h-screen bg-[#1e2235] text-white flex flex-col font-sans" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-      {/* JSON-LD Injection */}
+      {/* Schema.org Structured Data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
       <Navbar />
 
-      <main className="flex-1 pt-24 pb-20">
-        {/* ARTICLE HEADER */}
-        <section className="px-8 md:px-20 max-w-4xl mx-auto pt-6 pb-10">
+      <main className="flex-1 pt-28 pb-20">
+        {/* HEADER & NAV BACK */}
+        <section className="px-8 md:px-20 max-w-4xl mx-auto mb-8">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-white/60 hover:text-[#e84040] transition-colors mb-8 group"
+            className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-white/60 hover:text-[#e84040] transition-colors mb-6"
           >
-            <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" />
-            Voltar para o Blog
+            <ArrowLeft size={16} /> Voltar ao Blog
           </Link>
 
           <div className="flex flex-col gap-4">
@@ -127,7 +107,7 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
             {/* Author Bar */}
             <div className="flex items-center justify-between pt-6 border-t border-white/10 mt-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#e84040] flex items-center justify-center font-bold text-white text-sm">
+                <div className="w-10 h-10 rounded-full bg-[#e84040] flex items-center justify-center font-bold text-white text-sm shadow">
                   ES
                 </div>
                 <div>
@@ -155,31 +135,9 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
           </div>
         </section>
 
-        {/* ARTICLE BODY */}
+        {/* ARTICLE BODY - FULL RICH MARKDOWN RENDERER */}
         <article className="px-8 md:px-20 max-w-4xl mx-auto mb-16">
-          <div
-            className="prose prose-invert max-w-none text-white/80 space-y-6 text-sm md:text-base leading-relaxed"
-            style={{ fontFamily: "'Open Sans', sans-serif" }}
-          >
-            {post.content.split("\n\n").map((paragraph, index) => {
-              if (paragraph.startsWith("### ")) {
-                return (
-                  <h3
-                    key={index}
-                    className="text-xl md:text-2xl font-bold uppercase tracking-tight text-white mt-8 mb-4 border-l-4 border-[#e84040] pl-3"
-                    style={{ fontFamily: "'Montserrat', sans-serif" }}
-                  >
-                    {paragraph.replace("### ", "")}
-                  </h3>
-                );
-              }
-              return (
-                <p key={index} className="leading-relaxed text-white/80">
-                  {paragraph}
-                </p>
-              );
-            })}
-          </div>
+          <MarkdownRenderer content={post.content} />
 
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
@@ -199,31 +157,13 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
           )}
         </article>
 
-        {/* AUTHOR BIO BOX */}
-        <section className="px-8 md:px-20 max-w-4xl mx-auto mb-16">
-          <div className="p-6 md:p-8 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col md:flex-row items-center gap-6">
-            <div className="w-16 h-16 rounded-full bg-[#e84040] flex items-center justify-center font-extrabold text-white text-xl shrink-0">
-              ES
-            </div>
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#e84040]">
-                Escrito por
-              </span>
-              <h4 className="text-lg font-bold text-white mb-2">{post.author}</h4>
-              <p className="text-xs text-white/70 leading-relaxed" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-                Desenvolvedor Front-end e UI/UX Designer. Escreve sobre desenvolvimento web, arquitetura com React & Next.js e boas práticas de design de interfaces.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* NEXT / PREVIOUS POST NAVIGATION */}
+        {/* NEXT / PREVIOUS ARTICLE NAVIGATION */}
         <section className="px-8 md:px-20 max-w-4xl mx-auto pt-10 border-t border-white/10">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             {prev ? (
               <Link
                 href={`/blog/${prev.slug}`}
-                className="flex items-center gap-3 p-4 rounded-lg bg-white/[0.02] border border-white/5 hover:border-white/20 transition-all group w-full sm:w-auto"
+                className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/20 transition-all group w-full sm:w-auto"
               >
                 <ChevronLeft size={20} className="text-[#e84040] transition-transform group-hover:-translate-x-1" />
                 <div className="text-left">
@@ -239,7 +179,7 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
 
             <Link
               href="/blog"
-              className="text-xs font-bold tracking-widest uppercase text-white/60 hover:text-white transition-colors shrink-0"
+              className="text-xs font-bold tracking-widest uppercase text-white/60 hover:text-white transition-colors"
             >
               Ver Todos os Artigos
             </Link>
@@ -247,7 +187,7 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
             {next ? (
               <Link
                 href={`/blog/${next.slug}`}
-                className="flex items-center gap-3 p-4 rounded-lg bg-white/[0.02] border border-white/5 hover:border-white/20 transition-all group w-full sm:w-auto text-right"
+                className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/20 transition-all group w-full sm:w-auto text-right"
               >
                 <div>
                   <span className="text-[10px] uppercase font-bold tracking-widest text-white/40 block">
