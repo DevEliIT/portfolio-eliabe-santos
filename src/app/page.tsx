@@ -78,7 +78,7 @@ export default function HomePage() {
               className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-none mb-6 uppercase tracking-tight"
               style={{ fontFamily: "'Montserrat', sans-serif" }}
             >
-              Eliabe<br />Santos
+              Eliabe<br/>dos<br/>Santos
             </motion.h1>
 
             <motion.p
@@ -88,7 +88,7 @@ export default function HomePage() {
               className="text-base md:text-lg font-light mb-10 max-w-md"
               style={{ color: "rgba(255,255,255,0.65)", fontFamily: "'Open Sans', sans-serif" }}
             >
-              Desenvolvedor Front-end e Designer de Interfaces.
+              Desenvolvedor Full-Stack e Designer de Interfaces.
             </motion.p>
 
             <motion.a
@@ -161,10 +161,10 @@ export default function HomePage() {
             style={{ backgroundColor: "#e84040" }}
           >
             <p
-              className="text-sm leading-loose text-white/90 mb-8 max-w-sm"
+              className="text-sm leading-loose text-white/90 mb-8 max-w-xl"
               style={{ fontFamily: "'Open Sans', sans-serif" }}
             >
-              Sou desenvolvedor front-end e designer de interfaces com experiência em criar soluções digitais funcionais e visualmente atraentes. Apaixonado por tecnologia, UX e código limpo.
+              Minha jornada no desenvolvimento de software começou pela curiosidade em entender como a tecnologia pode resolver problemas reais. Desde então, venho construindo minha carreira atuando no desenvolvimento de aplicações mobile, web e desktop, sempre buscando criar soluções que combinem qualidade, performance e uma boa experiência para o usuário.<br/><br/>Ao longo da minha trajetória, trabalhei com projetos de diferentes níveis de complexidade, evoluindo de aplicações institucionais para sistemas corporativos e produtos utilizados diariamente por milhares de pessoas. 
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="self-start">
               <Link

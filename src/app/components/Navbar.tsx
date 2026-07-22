@@ -14,14 +14,15 @@ export function Navbar() {
         style={{ backgroundColor: "rgba(30, 34, 53, 0.95)" }}
       >
         <Link href="/" className="flex items-center gap-1 group">
-          <span
-            className="text-xl font-bold px-2 py-0.5 rounded transition-transform group-hover:scale-105"
-            style={{ color: "#e84040", fontFamily: "'Montserrat', sans-serif" }}
-          >
-            e
-          </span>
+         
           <span className="text-white text-sm font-semibold tracking-widest uppercase">
-            eliabesantos
+              <span
+              className="text-xl font-bold rounded transition-transform group-hover:scale-105"
+              style={{ color: "#e84040", fontFamily: "'Montserrat', sans-serif" }}
+            >
+              e
+            </span>
+            liabedossantos
           </span>
         </Link>
 
