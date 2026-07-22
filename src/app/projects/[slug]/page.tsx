@@ -112,8 +112,8 @@ export default async function ProjectDetailPage({ params }: PageProps) {
               alt={project.title}
               fill
               priority
-              className="object-cover"
-              sizes="(max-width: 1200px) 100vw, 1200px"
+             // className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
             />
           </div>
         </section>
