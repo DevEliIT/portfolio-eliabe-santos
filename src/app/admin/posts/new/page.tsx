@@ -18,7 +18,7 @@ export default function NewPostPage() {
     subtitle: "",
     content: "",
     coverImg: "",
-    author: "Eliabe Santos",
+    author: "Eliabe dos Santos",
     publishedAt: new Date().toISOString().split("T")[0],
     readTime: "5 min de leitura",
     featured: false,

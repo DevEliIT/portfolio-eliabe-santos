@@ -19,7 +19,7 @@ export function Footer() {
       </div>
 
       <div className="text-xs text-white/40 font-mono">
-        © {new Date().getFullYear()} Eliabe Santos. Todos os direitos reservados.
+        © {new Date().getFullYear()} Eliabe dos Santos. Todos os direitos reservados.
       </div>
 
       <div className="flex items-center gap-5">

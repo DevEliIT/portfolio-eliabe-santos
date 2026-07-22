@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!project) return { title: "Projeto Não Encontrado" };
 
   return {
-    title: `${project.title} | Portfólio Eliabe Santos`,
+    title: `${project.title} | Portfólio Eliabe dos Santos`,
     description: project.summary,
     openGraph: {
       title: project.title,

@@ -44,7 +44,7 @@ export default function EditPostPage({ params }: EditPostProps) {
             subtitle: post.subtitle || "",
             content: post.content || "",
             coverImg: post.coverImg || "",
-            author: post.author || "Eliabe Santos",
+            author: post.author || "Eliabe dos Santos",
             publishedAt: post.publishedAt || "",
             readTime: post.readTime || "",
             featured: post.featured || false,

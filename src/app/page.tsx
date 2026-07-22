@@ -8,7 +8,7 @@ import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
 import { Project } from "@/types/project";
 import { Post } from "@/types/post";
-import { Code2, LayoutGrid, ChevronDown, ArrowRight, Calendar, Clock } from "lucide-react";
+import { Code2, LayoutGrid, ChevronDown, ArrowRight, Calendar, Clock, Search, ScanSearch } from "lucide-react";
 
 export default function HomePage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -212,7 +212,41 @@ export default function HomePage() {
                 className="text-sm leading-relaxed"
                 style={{ color: "#aaa", fontFamily: "'Open Sans', sans-serif" }}
               >
-                Desenvolvimento de interfaces modernas e responsivas com Next.js, React, TypeScript e Tailwind CSS. Foco em performance e experiência do usuário.
+                Desenvolvimento de interfaces modernas e responsivas com Angular, Wordpress, Next.js, React e Vue.js. Foco em performance e experiência do usuário.
+              </p>
+            </motion.div>
+
+             <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              whileHover={{ y: -6 }}
+              className="flex flex-col items-start p-6 rounded-xl border border-transparent hover:border-gray-200 transition-all hover:shadow-lg"
+            >
+              <div
+                className="w-14 h-14 flex items-center justify-center rounded border mb-6"
+                style={{ borderColor: "#e0e0e0" }}
+              >
+                <Code2 size={24} style={{ color: "#e84040" }} />
+              </div>
+              <p
+                className="text-[10px] font-bold tracking-[0.3em] uppercase mb-1"
+                style={{ color: "#e84040" }}
+              >
+                Desenvolvimento
+              </p>
+              <h3
+                className="text-xl font-extrabold uppercase tracking-tight mb-4"
+                style={{ color: "#1e2235", fontFamily: "'Montserrat', sans-serif" }}
+              >
+                Mobile
+              </h3>
+              <p
+                className="text-sm leading-relaxed"
+                style={{ color: "#aaa", fontFamily: "'Open Sans', sans-serif" }}
+              >
+               Desenvolvimento de aplicações mobile com React Native, criando soluções performáticas, intuitivas e escaláveis para Android e iOS. Experiência com integrações de APIs, módulos nativos, publicação nas lojas e foco na experiência do usuário.
               </p>
             </motion.div>
 
@@ -248,6 +282,41 @@ export default function HomePage() {
                 style={{ color: "#aaa", fontFamily: "'Open Sans', sans-serif" }}
               >
                 Criação de interfaces intuitivas e visualmente impactantes com foco na experiência do usuário. Prototipação e design system no Figma com boas práticas de UX/UI.
+              </p>
+            </motion.div>
+
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              whileHover={{ y: -6 }}
+              className="flex flex-col items-start p-6 rounded-xl border border-transparent hover:border-gray-200 transition-all hover:shadow-lg"
+            >
+              <div
+                className="w-14 h-14 flex items-center justify-center rounded border mb-6"
+                style={{ borderColor: "#e0e0e0" }}
+              >
+                <ScanSearch size={24} style={{ color: "#e84040" }} />
+              </div>
+              <p
+                className="text-[10px] font-bold tracking-[0.3em] uppercase mb-1"
+                style={{ color: "#e84040" }}
+              >
+                Marketing
+              </p>
+              <h3
+                className="text-xl font-extrabold uppercase tracking-tight mb-4"
+                style={{ color: "#1e2235", fontFamily: "'Montserrat', sans-serif" }}
+              >
+                Seo
+              </h3>
+              <p
+                className="text-sm leading-relaxed"
+                style={{ color: "#aaa", fontFamily: "'Open Sans', sans-serif" }}
+              >
+                Otimização de sites para mecanismos de busca (SEO), aplicando boas práticas de SEO On-Page, melhorias de performance, estruturação de conteúdo e técnicas para aumentar a visibilidade orgânica e a experiência do usuário.
               </p>
             </motion.div>
           </div>

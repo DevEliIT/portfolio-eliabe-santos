@@ -6,13 +6,13 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://eliabesantos.dev";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Eliabe Santos | Desenvolvedor Front-end & UI/UX Designer",
-    template: "%s | Eliabe Santos",
+    default: "Eliabe dos Santos | Desenvolvedor Front-end & UI/UX Designer",
+    template: "%s | Eliabe dos Santos",
   },
   description:
-    "Portfólio oficial de Eliabe Santos. Desenvolvedor Front-end especialista em React, Next.js, TypeScript e UI/UX Design. Criação de interfaces modernas, sistemas interativos e aplicações web completas.",
+    "Portfólio oficial de Eliabe dos Santos. Desenvolvedor Front-end especialista em React, Next.js, TypeScript e UI/UX Design. Criação de interfaces modernas, sistemas interativos e aplicações web completas.",
   keywords: [
-    "Eliabe Santos",
+    "Eliabe dos Santos",
     "Desenvolvedor Front-end",
     "UI/UX Designer",
     "React",
@@ -23,9 +23,9 @@ export const metadata: Metadata = {
     "Portfólio Front-end",
     "Design de Interfaces",
   ],
-  authors: [{ name: "Eliabe Santos", url: siteUrl }],
-  creator: "Eliabe Santos",
-  publisher: "Eliabe Santos",
+  authors: [{ name: "Eliabe dos Santos", url: siteUrl }],
+  creator: "Eliabe dos Santos",
+  publisher: "Eliabe dos Santos",
   robots: {
     index: true,
     follow: true,
@@ -41,22 +41,22 @@ export const metadata: Metadata = {
     type: "website",
     locale: "pt_BR",
     url: siteUrl,
-    title: "Eliabe Santos | Desenvolvedor Front-end & UI/UX Designer",
+    title: "Eliabe dos Santos | Desenvolvedor Front-end & UI/UX Designer",
     description:
       "Desenvolvedor Front-end e Designer de Interfaces. Confira meus projetos, aplicativos e trajetória profissional.",
-    siteName: "Eliabe Santos Portfólio",
+    siteName: "Eliabe dos Santos Portfólio",
     images: [
       {
         url: "https://images.unsplash.com/photo-1558655146-d09347e92766?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200",
         width: 1200,
         height: 630,
-        alt: "Eliabe Santos Portfólio",
+        alt: "Eliabe dos Santos Portfólio",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Eliabe Santos | Desenvolvedor Front-end & UI/UX Designer",
+    title: "Eliabe dos Santos | Desenvolvedor Front-end & UI/UX Designer",
     description:
       "Desenvolvedor Front-end e Designer de Interfaces. Confira meus projetos e aplicações web.",
     images: ["https://images.unsplash.com/photo-1558655146-d09347e92766?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200"],
@@ -76,7 +76,7 @@ export default function RootLayout({
   const personJsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
-    name: "Eliabe Santos",
+    name: "Eliabe dos Santos",
     url: siteUrl,
     jobTitle: "Desenvolvedor Front-end & UI/UX Designer",
     email: "eliabe.developer@gmail.com",
@@ -100,12 +100,12 @@ export default function RootLayout({
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Eliabe Santos Portfólio",
+    name: "Eliabe dos Santos Portfólio",
     url: siteUrl,
-    description: "Portfólio de projetos e trabalhos de Eliabe Santos",
+    description: "Portfólio de projetos e trabalhos de Eliabe dos Santos",
     author: {
       "@type": "Person",
-      name: "Eliabe Santos",
+      name: "Eliabe dos Santos",
     },
   };
 

@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!post) return { title: "Artigo Não Encontrado" };
 
   return {
-    title: `${post.title} | Blog Eliabe Santos`,
+    title: `${post.title} | Blog Eliabe dos Santos`,
     description: post.subtitle,
     openGraph: {
       title: post.title,
@@ -56,7 +56,7 @@ export default async function BlogPostPage({ params }: PageProps) {
     datePublished: post.publishedAt,
     author: {
       "@type": "Person",
-      name: post.author || "Eliabe Santos",
+      name: post.author || "Eliabe dos Santos",
     },
   };
 
