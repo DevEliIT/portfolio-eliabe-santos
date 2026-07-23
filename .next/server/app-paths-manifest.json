@@ -1,5 +1,7 @@
 {
   "/api/projects/route": "app/api/projects/route.js",
+  "/api/resume/route": "app/api/resume/route.js",
+  "/api/contact/route": "app/api/contact/route.js",
   "/api/posts/route": "app/api/posts/route.js",
   "/page": "app/page.js",
   "/admin/page": "app/admin/page.js",

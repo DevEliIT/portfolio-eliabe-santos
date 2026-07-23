@@ -6,20 +6,23 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
+import { ContactSection } from "@/app/components/ContactSection";
 import { Project } from "@/types/project";
 import { Post } from "@/types/post";
-import { Code2, LayoutGrid, ChevronDown, ArrowRight, Calendar, Clock, Search, ScanSearch } from "lucide-react";
+import { Code2, LayoutGrid, ChevronDown, ArrowRight, Calendar, Clock, Search, ScanSearch, FileText, Download } from "lucide-react";
 
 export default function HomePage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [resumeUrl, setResumeUrl] = useState("/uploads/curriculo.pdf");
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [resProjects, resPosts] = await Promise.all([
+        const [resProjects, resPosts, resResume] = await Promise.all([
           fetch("/api/projects"),
           fetch("/api/posts"),
+          fetch("/api/resume"),
         ]);
         if (resProjects.ok) {
           const dataProjects = await resProjects.json();
@@ -28,6 +31,10 @@ export default function HomePage() {
         if (resPosts.ok) {
           const dataPosts = await resPosts.json();
           setPosts(dataPosts);
+        }
+        if (resResume.ok) {
+          const dataResume = await resResume.json();
+          if (dataResume.resumeUrl) setResumeUrl(dataResume.resumeUrl);
         }
       } catch (err) {
         console.error(err);
@@ -91,19 +98,38 @@ export default function HomePage() {
               Desenvolvedor Full-Stack e Designer de Interfaces.
             </motion.p>
 
-            <motion.a
-              href="#sobre"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase px-7 py-3 rounded-full border transition-colors hover:bg-white/10"
-              style={{ borderColor: "rgba(255,255,255,0.4)", color: "#ffffff" }}
-            >
-              Mais sobre mim
-              <ChevronDown size={14} />
-            </motion.a>
+            <div className="flex flex-wrap items-center gap-4">
+              <motion.a
+                href="#sobre"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase px-7 py-3 rounded-full border transition-colors hover:bg-white/10"
+                style={{ borderColor: "rgba(255,255,255,0.4)", color: "#ffffff" }}
+              >
+                Mais sobre mim
+                <ChevronDown size={14} />
+              </motion.a>
+
+              <motion.a
+                href={resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase px-7 py-3 rounded-full text-white transition-all shadow-lg hover:opacity-90"
+                style={{ backgroundColor: "#e84040" }}
+              >
+                <Download size={14} />
+                Baixar Currículo (PDF)
+              </motion.a>
+            </div>
           </motion.div>
 
           {/* Scroll indicator with bounce animation */}
@@ -522,6 +548,7 @@ export default function HomePage() {
         )}
       </main>
 
+      <ContactSection />
       <Footer />
     </div>
   );

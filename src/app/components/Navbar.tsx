@@ -1,11 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, FileText } from "lucide-react";
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [resumeUrl, setResumeUrl] = useState("/uploads/curriculo.pdf");
+
+  useEffect(() => {
+    fetch("/api/resume")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.resumeUrl) setResumeUrl(data.resumeUrl);
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <>
@@ -67,6 +77,19 @@ export function Navbar() {
             >
               Contato
             </Link>
+          </li>
+          <li>
+            <a
+              href={resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              download
+              className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase text-white/75 hover:text-[#e84040] transition-colors"
+              title="Baixar Currículo em PDF"
+            >
+              <FileText size={14} className="text-[#e84040]" />
+              Baixar CV
+            </a>
           </li>
           <li>
             <Link
@@ -134,6 +157,17 @@ export function Navbar() {
           >
             Contato
           </Link>
+          <a
+            href={resumeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            onClick={() => setMenuOpen(false)}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase text-white/80 hover:text-[#e84040]"
+          >
+            <FileText size={14} className="text-[#e84040]" />
+            Baixar CV
+          </a>
           <Link
             href="/projects"
             onClick={() => setMenuOpen(false)}

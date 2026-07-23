@@ -6,21 +6,66 @@ import Link from "next/link";
 import Image from "next/image";
 import { Project } from "@/types/project";
 import { Post } from "@/types/post";
-import { Plus, Edit2, Trash2, ExternalLink, Search, LayoutDashboard, ArrowLeft, RefreshCw, Star, LogOut, BookOpen, FolderGit2, ChevronUp, ChevronDown, Building2, GripVertical } from "lucide-react";
+import { ContactMessage } from "@/services/contactService";
+import { Plus, Edit2, Trash2, ExternalLink, Search, LayoutDashboard, ArrowLeft, RefreshCw, Star, LogOut, BookOpen, FolderGit2, ChevronUp, ChevronDown, Building2, GripVertical, FileText, Inbox, Upload, Download, Mail, User, Clock, CheckCircle2 } from "lucide-react";
 
 function AdminContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const activeTab = searchParams.get("tab") === "posts" ? "posts" : "projects";
+  const activeTab = searchParams.get("tab") || "projects";
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [messages, setMessages] = useState<ContactMessage[]>([]);
+  const [resumeUrl, setResumeUrl] = useState("/uploads/curriculo.pdf");
+  const [uploadingCv, setUploadingCv] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      if (activeTab === "projects") {
+        const res = await fetch("/api/projects");
+        if (res.ok) {
+          const data = await res.json();
+          setProjects(data);
+        }
+      } else if (activeTab === "posts") {
+        const res = await fetch("/api/posts");
+        if (res.ok) {
+          const data = await res.json();
+          setPosts(data);
+        }
+      } else if (activeTab === "messages") {
+        const res = await fetch("/api/contact");
+        if (res.ok) {
+          const data = await res.json();
+          setMessages(data);
+        }
+      }
+
+      // Always fetch current active CV URL
+      const resResume = await fetch("/api/resume");
+      if (resResume.ok) {
+        const dataResume = await resResume.json();
+        if (dataResume.resumeUrl) setResumeUrl(dataResume.resumeUrl);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [activeTab]);
 
   const handleReorder = async (newList: Project[]) => {
     setProjects(newList);
@@ -93,33 +138,6 @@ function AdminContent() {
     setDragOverIndex(null);
   };
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      if (activeTab === "projects") {
-        const res = await fetch("/api/projects");
-        if (res.ok) {
-          const data = await res.json();
-          setProjects(data);
-        }
-      } else {
-        const res = await fetch("/api/posts");
-        if (res.ok) {
-          const data = await res.json();
-          setPosts(data);
-        }
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [activeTab]);
-
   const handleLogout = async () => {
     try {
       await fetch("/api/admin/logout", { method: "POST" });
@@ -168,6 +186,59 @@ function AdminContent() {
     }
   };
 
+  const handleDeleteMessage = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir esta mensagem?")) return;
+
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/contact?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setMessages((prev) => prev.filter((m) => m.id !== id));
+        setMessage({ text: "Mensagem excluída com sucesso!", type: "success" });
+      } else {
+        setMessage({ text: "Erro ao excluir a mensagem.", type: "error" });
+      }
+    } catch (err) {
+      setMessage({ text: "Erro de conexão ao excluir.", type: "error" });
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleCvUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+      setMessage({ text: "Por favor, selecione um arquivo válido em formato PDF.", type: "error" });
+      return;
+    }
+
+    setUploadingCv(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/resume", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setResumeUrl(data.resumeUrl);
+        setMessage({ text: "Novo currículo enviado e ativado com sucesso!", type: "success" });
+      } else {
+        const data = await res.json();
+        setMessage({ text: data.error || "Erro ao fazer upload do currículo.", type: "error" });
+      }
+    } catch (err) {
+      setMessage({ text: "Erro de conexão ao enviar o currículo.", type: "error" });
+    } finally {
+      setUploadingCv(false);
+    }
+  };
+
   const filteredProjects = projects.filter(
     (p) =>
       p.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -178,6 +249,14 @@ function AdminContent() {
     (p) =>
       p.title.toLowerCase().includes(search.toLowerCase()) ||
       p.category.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const filteredMessages = messages.filter(
+    (m) =>
+      m.name.toLowerCase().includes(search.toLowerCase()) ||
+      m.email.toLowerCase().includes(search.toLowerCase()) ||
+      m.subject.toLowerCase().includes(search.toLowerCase()) ||
+      m.message.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -198,7 +277,7 @@ function AdminContent() {
         </div>
 
         <div className="flex items-center gap-3">
-          {activeTab === "projects" ? (
+          {activeTab === "projects" && (
             <Link
               href="/admin/new"
               className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-5 py-2.5 rounded-full text-white transition-all shadow-lg hover:opacity-90"
@@ -207,7 +286,9 @@ function AdminContent() {
               <Plus size={16} />
               Novo Projeto
             </Link>
-          ) : (
+          )}
+
+          {activeTab === "posts" && (
             <Link
               href="/admin/posts/new"
               className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-5 py-2.5 rounded-full text-white transition-all shadow-lg hover:opacity-90"
@@ -232,7 +313,7 @@ function AdminContent() {
       {/* Main Content */}
       <main className="flex-1 p-8 max-w-6xl mx-auto w-full">
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-3 border-b border-white/10 pb-4 mb-8">
+        <div className="flex flex-wrap items-center gap-3 border-b border-white/10 pb-4 mb-8">
           <Link
             href="/admin"
             className={`inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-lg border transition-all ${
@@ -255,6 +336,30 @@ function AdminContent() {
           >
             <BookOpen size={16} />
             Artigos do Blog ({posts.length})
+          </Link>
+
+          <Link
+            href="/admin?tab=messages"
+            className={`inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-lg border transition-all ${
+              activeTab === "messages"
+                ? "bg-[#e84040] text-white border-[#e84040]"
+                : "bg-white/5 text-white/70 border-white/10 hover:text-white"
+            }`}
+          >
+            <Inbox size={16} />
+            Mensagens ({messages.length})
+          </Link>
+
+          <Link
+            href="/admin?tab=resume"
+            className={`inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-lg border transition-all ${
+              activeTab === "resume"
+                ? "bg-[#e84040] text-white border-[#e84040]"
+                : "bg-white/5 text-white/70 border-white/10 hover:text-white"
+            }`}
+          >
+            <FileText size={16} />
+            Meu Currículo (CV)
           </Link>
         </div>
 
@@ -522,6 +627,140 @@ function AdminContent() {
                 </table>
               </div>
             )}
+          </div>
+        )}
+
+        {/* TAB 3: CONTACT MESSAGES */}
+        {activeTab === "messages" && (
+          <div className="bg-[#1e2235] border border-white/10 rounded-xl overflow-hidden shadow-xl">
+            {loading ? (
+              <div className="p-12 text-center text-xs text-white/50">Carregando mensagens...</div>
+            ) : filteredMessages.length === 0 ? (
+              <div className="p-12 text-center text-xs text-white/50">
+                Nenhuma mensagem de contato recebida.
+              </div>
+            ) : (
+              <div className="divide-y divide-white/5">
+                {filteredMessages.map((msg) => (
+                  <div key={msg.id} className="p-6 hover:bg-white/[0.02] transition-colors space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[#e84040]/10 flex items-center justify-center text-[#e84040] font-bold text-xs shrink-0">
+                          {msg.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <span className="font-bold text-sm text-white block">{msg.name}</span>
+                          <a href={`mailto:${msg.email}`} className="text-xs text-white/60 hover:text-[#e84040]">
+                            {msg.email}
+                          </a>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-mono text-white/40">
+                          {new Date(msg.createdAt).toLocaleString("pt-BR")}
+                        </span>
+                        <a
+                          href={`mailto:${msg.email}?subject=Re: ${encodeURIComponent(msg.subject)}`}
+                          className="p-1.5 rounded bg-white/5 text-blue-400 hover:bg-blue-500/20 text-xs font-semibold px-3 inline-flex items-center gap-1"
+                        >
+                          <Mail size={12} /> Responder
+                        </a>
+                        <button
+                          onClick={() => handleDeleteMessage(msg.id)}
+                          disabled={deletingId === msg.id}
+                          className="p-1.5 rounded bg-white/5 text-red-400 hover:bg-red-500/20 text-xs font-semibold px-2.5 inline-flex items-center gap-1 disabled:opacity-50"
+                        >
+                          <Trash2 size={12} /> Excluir
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="text-xs font-bold text-[#e84040] uppercase tracking-wider block mb-1">
+                        {msg.subject || "Sem Assunto"}
+                      </span>
+                      <p className="text-xs text-white/80 leading-relaxed bg-black/20 p-4 rounded-lg border border-white/5 whitespace-pre-wrap font-sans">
+                        {msg.message}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 4: MY RESUME (CV) */}
+        {activeTab === "resume" && (
+          <div className="p-8 rounded-xl bg-[#1e2235] border border-white/10 space-y-8 shadow-xl">
+            <div>
+              <div className="w-8 h-1 mb-3" style={{ backgroundColor: "#e84040" }} />
+              <h2 className="text-lg font-bold uppercase tracking-wider text-white">
+                Gerenciar Currículo (CV)
+              </h2>
+              <p className="text-xs text-white/60 font-light mt-1">
+                Suba o seu currículo mais recente em formato PDF. Ele ficará disponível para download em todo o site.
+              </p>
+            </div>
+
+            {/* Current Active CV Status */}
+            <div className="p-6 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-[#e84040]/10 flex items-center justify-center text-[#e84040]">
+                  <FileText size={24} />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#e84040] block">
+                    Currículo Ativo no Site
+                  </span>
+                  <span className="text-xs text-white/90 font-mono block mt-0.5 truncate max-w-md">
+                    {resumeUrl}
+                  </span>
+                </div>
+              </div>
+
+              <a
+                href={resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-full border border-white/20 text-white hover:bg-white/10 transition-all shrink-0"
+              >
+                <Download size={14} />
+                Visualizar PDF
+              </a>
+            </div>
+
+            {/* Upload Form Box */}
+            <div className="p-8 rounded-xl bg-black/20 border-2 border-dashed border-white/15 text-center space-y-4">
+              <div className="w-12 h-12 rounded-full bg-white/5 mx-auto flex items-center justify-center text-white/60">
+                <Upload size={20} />
+              </div>
+
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                  Subir Novo Arquivo PDF
+                </h3>
+                <p className="text-[11px] text-white/40 mt-1">
+                  Selecione um arquivo .pdf do seu computador (Máx: 10MB)
+                </p>
+              </div>
+
+              <div className="pt-2">
+                <label className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full text-white cursor-pointer transition-all hover:opacity-90 shadow-lg" style={{ backgroundColor: "#e84040" }}>
+                  <Upload size={16} />
+                  {uploadingCv ? "Enviando arquivo..." : "Selecionar Arquivo PDF"}
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handleCvUpload}
+                    disabled={uploadingCv}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            </div>
           </div>
         )}
       </main>

@@ -67,7 +67,29 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('portfolio-images', 'portfolio-images', true)
 ON CONFLICT (id) DO NOTHING;
 
-CREATE POLICY "Permitir Acesso Público às Imagens"
-  ON storage.objects FOR ALL
-  USING (bucket_id = 'portfolio-images')
-  WITH CHECK (bucket_id = 'portfolio-images');
+-- 5. Tabela de Configurações do Sistema
+CREATE TABLE IF NOT EXISTS public.settings (
+  key TEXT PRIMARY KEY,
+  value JSONB NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 6. Tabela de Mensagens de Contato
+CREATE TABLE IF NOT EXISTS public.contact_messages (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  subject TEXT,
+  message TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Permitir Leitura e Escrita em Settings"
+  ON public.settings FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Permitir Leitura e Escrita em Contact Messages"
+  ON public.contact_messages FOR ALL USING (true) WITH CHECK (true);
+
