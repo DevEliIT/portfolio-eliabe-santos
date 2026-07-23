@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Project } from "@/types/project";
 import { Post } from "@/types/post";
-import { Plus, Edit2, Trash2, ExternalLink, Search, LayoutDashboard, ArrowLeft, RefreshCw, Star, LogOut, BookOpen, FolderGit2 } from "lucide-react";
+import { Plus, Edit2, Trash2, ExternalLink, Search, LayoutDashboard, ArrowLeft, RefreshCw, Star, LogOut, BookOpen, FolderGit2, ChevronUp, ChevronDown, Building2, GripVertical } from "lucide-react";
 
 function AdminContent() {
   const router = useRouter();
@@ -19,6 +19,79 @@ function AdminContent() {
   const [search, setSearch] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const handleReorder = async (newList: Project[]) => {
+    setProjects(newList);
+    try {
+      const orderedIds = newList.map((p) => p.id);
+      const res = await fetch("/api/projects/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderedIds }),
+      });
+      if (res.ok) {
+        setMessage({ text: "Nova ordem dos projetos salva com sucesso!", type: "success" });
+      } else {
+        setMessage({ text: "Erro ao salvar a ordem no banco de dados.", type: "error" });
+      }
+    } catch (err) {
+      console.error("Erro ao salvar ordem:", err);
+      setMessage({ text: "Erro de conexão ao salvar a ordem.", type: "error" });
+    }
+  };
+
+  const handleMoveUp = (index: number) => {
+    if (index === 0) return;
+    const newList = [...projects];
+    const temp = newList[index - 1];
+    newList[index - 1] = newList[index];
+    newList[index] = temp;
+    handleReorder(newList);
+  };
+
+  const handleMoveDown = (index: number) => {
+    if (index === projects.length - 1) return;
+    const newList = [...projects];
+    const temp = newList[index + 1];
+    newList[index + 1] = newList[index];
+    newList[index] = temp;
+    handleReorder(newList);
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    if (search !== "") return;
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", index.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (search !== "" || draggedIndex === null) return;
+    if (dragOverIndex !== index) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || search !== "") return;
+    if (draggedIndex !== targetIndex) {
+      const newList = [...projects];
+      const [movedItem] = newList.splice(draggedIndex, 1);
+      newList.splice(targetIndex, 0, movedItem);
+      handleReorder(newList);
+    }
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -232,7 +305,9 @@ function AdminContent() {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-white/10 text-[10px] font-bold uppercase tracking-widest text-white/40 bg-black/20">
+                      <th className="p-4 w-28 text-center">Ordem</th>
                       <th className="p-4">Projeto</th>
+                      <th className="p-4">Empresa / Cliente</th>
                       <th className="p-4">Categoria</th>
                       <th className="p-4">Ano</th>
                       <th className="p-4">Destaque</th>
@@ -240,8 +315,54 @@ function AdminContent() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5 text-xs">
-                    {filteredProjects.map((p) => (
-                      <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
+                    {filteredProjects.map((p, index) => (
+                      <tr
+                        key={p.id}
+                        draggable={search === ""}
+                        onDragStart={(e) => handleDragStart(e, index)}
+                        onDragOver={(e) => handleDragOver(e, index)}
+                        onDrop={(e) => handleDrop(e, index)}
+                        onDragEnd={handleDragEnd}
+                        className={`transition-all ${
+                          draggedIndex === index ? "opacity-30 bg-white/5" : ""
+                        } ${
+                          dragOverIndex === index && draggedIndex !== index
+                            ? "border-t-2 border-t-[#e84040] bg-white/[0.05]"
+                            : "hover:bg-white/[0.02]"
+                        }`}
+                      >
+                        <td className="p-4 text-center">
+                          <div className="flex items-center justify-center gap-1.5">
+                            <span
+                              className={`p-1 rounded cursor-grab active:cursor-grabbing text-white/30 hover:text-white/80 transition-colors ${
+                                search !== "" ? "opacity-20 cursor-not-allowed" : ""
+                              }`}
+                              title={search === "" ? "Arraste para reordenar" : "Limpe a busca para arrastar"}
+                            >
+                              <GripVertical size={14} />
+                            </span>
+                            <span className="w-5 text-[11px] font-mono font-bold text-white/40">{index + 1}</span>
+                            <div className="flex flex-col gap-0.5">
+                              <button
+                                onClick={() => handleMoveUp(index)}
+                                disabled={index === 0 || search !== ""}
+                                className="p-1 rounded bg-white/5 text-white/60 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-20 disabled:hover:bg-white/5"
+                                title="Mover para cima"
+                              >
+                                <ChevronUp size={12} />
+                              </button>
+                              <button
+                                onClick={() => handleMoveDown(index)}
+                                disabled={index === filteredProjects.length - 1 || search !== ""}
+                                className="p-1 rounded bg-white/5 text-white/60 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-20 disabled:hover:bg-white/5"
+                                title="Mover para baixo"
+                              >
+                                <ChevronDown size={12} />
+                              </button>
+                            </div>
+                          </div>
+                        </td>
+
                         <td className="p-4">
                           <div className="flex items-center gap-3">
                             <div className="relative w-12 h-12 rounded overflow-hidden bg-black/40 border border-white/10 shrink-0">
@@ -252,6 +373,17 @@ function AdminContent() {
                               <span className="text-[10px] text-white/40 font-mono">/projects/{p.slug}</span>
                             </div>
                           </div>
+                        </td>
+
+                        <td className="p-4">
+                          {p.company ? (
+                            <div className="flex items-center gap-1.5 text-white/90">
+                              <Building2 size={13} className="text-[#e84040] shrink-0" />
+                              <span className="font-medium text-xs">{p.company}</span>
+                            </div>
+                          ) : (
+                            <span className="text-white/50 text-xs">{p.client || "-"}</span>
+                          )}
                         </td>
 
                         <td className="p-4">
@@ -285,7 +417,7 @@ function AdminContent() {
 
                             <Link
                               href={`/admin/edit/${p.id}`}
-                              className="p-2 rounded bg-white/5 text-blue-400 hover:bg-blue-500/20 transition-colors"
+                              className="p-2 rounded bg-[#1e2235] text-blue-400 hover:bg-blue-500/20 border border-white/10 transition-colors"
                               title="Editar"
                             >
                               <Edit2 size={14} />
@@ -294,7 +426,7 @@ function AdminContent() {
                             <button
                               onClick={() => handleDeleteProject(p.id, p.title)}
                               disabled={deletingId === p.id}
-                              className="p-2 rounded bg-white/5 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
+                              className="p-2 rounded bg-[#1e2235] text-red-400 hover:bg-red-500/20 border border-white/10 transition-colors disabled:opacity-50"
                               title="Excluir"
                             >
                               <Trash2 size={14} />

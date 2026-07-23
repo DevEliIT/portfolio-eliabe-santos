@@ -22,15 +22,25 @@ async function writeLocalProjects(projects: Project[]): Promise<void> {
 }
 
 export async function getAllProjects(): Promise<Project[]> {
+  let list: Project[] = [];
   if (isSupabaseConfigured() && supabase) {
     try {
-      const { data, error } = await supabase.from("projects").select("*").order("created_at", { ascending: false });
-      if (!error && data) return data as Project[];
+      const { data, error } = await supabase.from("projects").select("*");
+      if (!error && data) {
+        list = data as Project[];
+      } else if (error) {
+        console.error("Supabase fetch error:", error);
+      }
     } catch (err) {
       console.error("Supabase fetch failed, falling back to local JSON", err);
     }
   }
-  return readLocalProjects();
+
+  if (list.length === 0) {
+    list = await readLocalProjects();
+  }
+
+  return list.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
 }
 
 export async function getProjectById(id: string): Promise<Project | null> {
@@ -72,15 +82,20 @@ export async function getAdjacentProjects(currentSlug: string): Promise<{ prev: 
 }
 
 export async function saveProject(project: Omit<Project, "id"> & { id?: string }): Promise<Project> {
+  const existingProjects = await getAllProjects();
+  const maxOrder = existingProjects.reduce((max, p) => Math.max(max, p.order ?? 0), 0);
+
   const newProject: Project = {
     ...project,
     id: project.id || Date.now().toString(),
+    order: project.order !== undefined ? project.order : maxOrder + 1,
   };
 
   if (isSupabaseConfigured() && supabase) {
     try {
       const { data, error } = await supabase.from("projects").upsert(newProject).select().single();
       if (!error && data) return data as Project;
+      if (error) console.error("Supabase save error:", error);
     } catch (err) {
       console.error("Supabase save failed", err);
     }
@@ -93,11 +108,56 @@ export async function saveProject(project: Omit<Project, "id"> & { id?: string }
   if (existingIndex >= 0) {
     projects[existingIndex] = newProject;
   } else {
-    projects.unshift(newProject);
+    projects.push(newProject);
   }
 
+  projects.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
   await writeLocalProjects(projects);
   return newProject;
+}
+
+export async function reorderProjects(orderedIds: string[]): Promise<boolean> {
+  const all = await getAllProjects();
+
+  const updatedProjects = all.map((p) => {
+    const idx = orderedIds.indexOf(p.id);
+    if (idx !== -1) {
+      return { ...p, order: idx + 1 };
+    }
+    return p;
+  });
+
+  updatedProjects.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+
+  if (isSupabaseConfigured() && supabase) {
+    try {
+      for (const p of updatedProjects) {
+        const { error } = await supabase.from("projects").update({ order: p.order }).eq("id", p.id);
+        if (error) {
+          console.error(`Error updating order in Supabase for project ${p.id}:`, error);
+        }
+      }
+    } catch (err) {
+      console.error("Supabase reorder failed", err);
+    }
+  }
+
+  try {
+    const localProjects = await readLocalProjects();
+    const updatedLocal = localProjects.map((p) => {
+      const idx = orderedIds.indexOf(p.id);
+      if (idx !== -1) {
+        return { ...p, order: idx + 1 };
+      }
+      return p;
+    });
+    updatedLocal.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+    await writeLocalProjects(updatedLocal);
+  } catch (err) {
+    console.error("Error updating local file", err);
+  }
+
+  return true;
 }
 
 export const createProject = saveProject;

@@ -20,6 +20,7 @@ export default function NewProjectPage() {
     summary: "",
     description: "",
     client: "",
+    company: "",
     year: new Date().getFullYear().toString(),
     role: "Front-end Developer & UI Designer",
     coverImg: "",
@@ -52,6 +53,7 @@ export default function NewProjectPage() {
         summary: formData.summary,
         description: formData.description,
         client: formData.client || "Cliente Autônomo",
+        company: formData.company,
         year: formData.year,
         role: formData.role,
         coverImg: formData.coverImg,
@@ -155,10 +157,23 @@ export default function NewProjectPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs font-bold uppercase text-white/70 mb-2">
-                  Cliente
+                  Empresa / Empregador (onde trabalhou)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: Empresa X Tecnologia Ltda."
+                  value={formData.company}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-white/70 mb-2">
+                  Cliente / Projeto Para
                 </label>
                 <input
                   type="text"

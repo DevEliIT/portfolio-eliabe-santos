@@ -20,10 +20,16 @@ CREATE TABLE IF NOT EXISTS public.projects (
   solution TEXT,
   "keyFeatures" TEXT[],
   gallery TEXT[],
+  company TEXT,
+  "order" INTEGER DEFAULT 0,
   "liveUrl" TEXT,
   "githubUrl" TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- Migrações (para tabelas existentes)
+ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS company TEXT;
+ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS "order" INTEGER DEFAULT 0;
 
 -- 2. Tabela de Posts do Blog
 CREATE TABLE IF NOT EXISTS public.posts (

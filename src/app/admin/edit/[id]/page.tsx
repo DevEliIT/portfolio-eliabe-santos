@@ -26,6 +26,7 @@ export default function EditProjectPage({ params }: EditProps) {
     summary: "",
     description: "",
     client: "",
+    company: "",
     year: "",
     role: "",
     coverImg: "",
@@ -53,6 +54,7 @@ export default function EditProjectPage({ params }: EditProps) {
             summary: project.summary || "",
             description: project.description || "",
             client: project.client || "",
+            company: project.company || "",
             year: project.year || "",
             role: project.role || "",
             coverImg: project.coverImg || "",
@@ -96,6 +98,7 @@ export default function EditProjectPage({ params }: EditProps) {
         summary: formData.summary,
         description: formData.description,
         client: formData.client,
+        company: formData.company,
         year: formData.year,
         role: formData.role,
         coverImg: formData.coverImg,
@@ -206,13 +209,27 @@ export default function EditProjectPage({ params }: EditProps) {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs font-bold uppercase text-white/70 mb-2">
-                  Cliente
+                  Empresa / Empregador (onde trabalhou)
                 </label>
                 <input
                   type="text"
+                  placeholder="Ex: Empresa X Tecnologia Ltda."
+                  value={formData.company}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-white/70 mb-2">
+                  Cliente / Projeto Para
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: NeuroHealth Labs"
                   value={formData.client}
                   onChange={(e) => setFormData({ ...formData, client: e.target.value })}
                   className="w-full bg-[#161927] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#e84040]"

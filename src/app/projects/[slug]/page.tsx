@@ -5,7 +5,7 @@ import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
 import { ProjectGallery } from "@/app/components/ProjectGallery";
 import { getAllProjects, getProjectBySlug, getAdjacentProjects } from "@/services/projectsService";
-import { ArrowLeft, ExternalLink, Github, Calendar, User, Code2, CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react";
+import { ArrowLeft, ExternalLink, Github, Calendar, User, Code2, CheckCircle2, ChevronRight, ChevronLeft, Building2 } from "lucide-react";
 import type { Metadata } from "next";
 
 interface PageProps {
@@ -120,7 +120,15 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
         {/* PROJECT SPECS BAR */}
         <section className="px-8 md:px-20 max-w-6xl mx-auto mb-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-xl bg-white/[0.03] border border-white/10">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 p-6 rounded-xl bg-white/[0.03] border border-white/10">
+            {project.company && (
+              <div>
+                <span className="text-[10px] font-bold tracking-widest uppercase text-white/40 flex items-center gap-1.5 mb-1">
+                  <Building2 size={12} className="text-[#e84040]" /> Empresa
+                </span>
+                <p className="text-sm font-semibold text-white">{project.company}</p>
+              </div>
+            )}
             <div>
               <span className="text-[10px] font-bold tracking-widest uppercase text-white/40 flex items-center gap-1.5 mb-1">
                 <User size={12} className="text-[#e84040]" /> Cliente

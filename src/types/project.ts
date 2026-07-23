@@ -16,6 +16,8 @@ export interface Project {
   solution: string;
   keyFeatures: string[];
   gallery: string[];
+  company?: string;
+  order?: number;
   liveUrl?: string;
   githubUrl?: string;
 }

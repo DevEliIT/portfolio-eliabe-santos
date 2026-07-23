@@ -33,6 +33,8 @@
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1000",
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1000"
     ],
+    "company": "Metrics Corp",
+    "order": 1,
     "liveUrl": "https://example.com/dashboard",
     "githubUrl": "https://github.com/example/dashboard"
   },
@@ -70,6 +72,8 @@
       "https://images.unsplash.com/photo-1441986300917-64674bd600d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1000",
       "https://images.unsplash.com/photo-1472851294608-062f824d29cc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1000"
     ],
+    "company": "Aura Apparel",
+    "order": 2,
     "liveUrl": "https://example.com/e-commerce",
     "githubUrl": "https://github.com/example/e-commerce"
   }
